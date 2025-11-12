@@ -3,4 +3,4 @@ TO INITIALIZE THE DATABASE */
 
 /* DROP DATABASE IF EXISTS `itsapp`; */ 
 CREATE DATABASE IF NOT EXISTS `itsapp`;
-USE `itsapp`
+USE `itsapp`;

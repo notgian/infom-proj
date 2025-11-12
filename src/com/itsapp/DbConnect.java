@@ -4,6 +4,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * Represents an object to hold a connection to the database. 
+ * It does not automatically connect to the database and the
+ * connect method must be called for the connection to be established.
+ *
+ */
 class DbConnect {
 
     private final String HOST; 
@@ -13,8 +19,12 @@ class DbConnect {
     private final String PASSWORD; 
     private final String DB_URL; 
 
-    private Connection Conn;
-
+    private Connection Conn = null;
+     
+    /**
+     * Default and only constructor for this connection object.
+     * Connection information is hardcoded here.
+     */
     public DbConnect() {
         this.HOST = "localhost";
         this.PORT = "3306";
@@ -26,12 +36,11 @@ class DbConnect {
 
     /**
      * attempts to initialize a connection with the database
-     *
-     *
+     *  @return a boolean representing whether the connection was successful or not
      *
      * */
-    public void connect() {
-        System.out.println("Connecting to database: " + DB_URL);
+    public boolean connect() {
+        System.out.println("Attempting to connect to database: " + DB_URL);
         Connection conn = null;
 
         try {
@@ -46,8 +55,13 @@ class DbConnect {
             e.printStackTrace();
         }
 
-        if (conn != null) this.Conn = conn;
+        if (conn != null) {
+            this.Conn = conn;
+            return true;
+        }
+        return false;
     }
+
 
     /**
      * Creates the tables 
