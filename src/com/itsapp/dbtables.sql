@@ -1,6 +1,3 @@
-/* CORE ENTITIES */
-/* equipment, student, lab tech, and org tables for testing only */
-
 /* DROP TABLES ONLY FOR TESTING */
 DROP TABLE IF EXISTS `equipment_transaction_log`;
 DROP TABLE IF EXISTS `lab_reservation_log`;
@@ -14,48 +11,57 @@ DROP TABLE IF EXISTS `organization`;
 DROP TABLE IF EXISTS `laboratory`;
 
 
+/* CORE ENTITIES */
 CREATE TABLE IF NOT EXISTS `equipment` (
-    equipment_code INTEGER NOT NULL ,
-    name VARCHAR(30),
+    equipment_code INTEGER (8) NOT NULL ,
+    equipment_name VARCHAR(20),
     description VARCHAR (100),
-    status VARCHAR (10),
+    status VARCHAR(10),
 
     CHECK (status IN ('usable', 'broken')),
-    CHECK (equipment_code >= 100000 AND equipment_code <= 999999),
+    CHECK (equipment_code >= 10000000 AND equipment_code <= 99999999),
     PRIMARY KEY (equipment_code)
 );
 
 CREATE TABLE IF NOT EXISTS `student` (
-    student_id INTEGER NOT NULL,
-    first_name VARCHAR(15),
-    last_name VARCHAR(15),
+    student_id INTEGER(8) NOT NULL,
+    first_name VARCHAR(20),
+    last_name VARCHAR(20),
+    course VARCHAR(10),
+    year_level INTEGER(4),
+    enrollment_status VARCHAR(12),
+    email VARCHAR(40),
 
     CHECK (student_id >= 10000000 AND student_id <= 99999999),
+    CHECK (enrollment_status IN ('enrolled', 'not enrolled')),
     PRIMARY KEY (student_id)
 );
 
 CREATE TABLE IF NOT EXISTS `lab_technician` (
-    lab_tech_id INTEGER NOT NULL,
-    first_name VARCHAR(15),
-    last_name VARCHAR(15),
+    lab_tech_id INTEGER(8) NOT NULL,
+    first_name VARCHAR(20),
+    last_name VARCHAR(20),
+    email VARCHAR(40),
 
     CHECK (lab_tech_id >= 10000000 AND lab_tech_id <= 99999999),
     PRIMARY KEY (lab_tech_id)
 );
 
 CREATE TABLE IF NOT EXISTS `organization` (
-    org_id INTEGER NOT NULL, 
-    org_name VARCHAR(30),
+    org_id INTEGER(8) NOT NULL, 
+    org_name VARCHAR(20),
+    org_email VARCHAR(40),
 
     PRIMARY KEY (org_id)
 );
 
 CREATE TABLE IF NOT EXISTS `laboratory` (
-    lab_code INTEGER NOT NULL, 
-    lab_name VARCHAR(10), 
-    description VARCHAR(200), 
-    capacity INTEGER, 
+    lab_code INTEGER (8) NOT NULL, 
+    lab_location VARCHAR(20), 
+    description VARCHAR(100), 
+    capacity INTEGER(3), 
 
+    CHECK (lab_code >= 10000000 AND lab_code <= 99999999),
     PRIMARY KEY (lab_code)
 );
 
@@ -63,48 +69,49 @@ CREATE TABLE IF NOT EXISTS `laboratory` (
 
 -- For recording equipment-related transactions
 CREATE TABLE IF NOT EXISTS `equipment_transaction_log` (
-    transaction_id INTEGER NOT NULL ,
+    transaction_id INTEGER(8) NOT NULL ,
     student_id INTEGER, -- SET FK
     equipment_id INTEGER, -- SET KN
-    lab_tech_id INTEGER, -- SET FK
-    date DATE, -- date of transaction
-    remarks VARCHAR(2000),
+    labtech_id INTEGER, -- SET FK
+    transaction_date DATE, -- date of transaction
+    remarks VARCHAR(100),
     status VARCHAR(8), -- borrowed, broken, returned, replaced
 
     CHECK (status IN ('borrowed', 'broken', 'returned', 'replaced') ),
     PRIMARY KEY (transaction_id),
     FOREIGN KEY (student_id) REFERENCES student (student_id),
     FOREIGN KEY (equipment_id) REFERENCES equipment (equipment_code),
-    FOREIGN KEY (lab_tech_id) REFERENCES lab_technician (lab_tech_id)
+    FOREIGN KEY (labtech_id) REFERENCES lab_technician (lab_tech_id)
 );
 
 
 CREATE TABLE IF NOT EXISTS `lab_reservation_log` ( -- unlike the equipment borrow/return log will have reservations listed here. Cancelled reserations will be flagged as such
-    reservation_id INTEGER NOT NULL ,
-    organization_id INTEGER, -- SET FK
-    laboratory_id INTEGER, -- SET FK
-    lab_tech_id INTEGER, -- SET FK
-    date DATE,
+    reservation_id INTEGER(8) NOT NULL,
+    organization_id INTEGER(8), -- SET FK
+    laboratory_id INTEGER(8), -- SET FK
+    labtech_id INTEGER(8), -- SET FK
+    transaction DATE,
     reservation_date DATE,
     start_time TIME,
     end_time TIME,
-    remarks VARCHAR(2000),
+    remarks VARCHAR(100),
     status VARCHAR(10) -- 'reserved, cancelled'
 
-    CHECK ( TIMEDIFF(end_time, start_time) >= 1),
+    CHECK ( TIMEDIFF(end_time, start_time) >= 1), -- start and end time are not the same
+    CHECK (status IN ('reserved', 'cancelled') ),
     PRIMARY KEY (reservation_id),
     FOREIGN KEY (organization_id) REFERENCES organization (org_id),
     FOREIGN KEY (laboratory_id) REFERENCES laboratory (lab_code),
-    FOREIGN KEY (lab_tech_id) REFERENCES lab_technician (lab_tech_id)
+    FOREIGN KEY (labtech_id) REFERENCES lab_technician (lab_tech_id)
 );
 
 /* SECONDARY ENTITIES */
 
 CREATE TABLE IF NOT EXISTS `lab_class_schedule` (
-    laboratory_id INTEGER, -- SET FK
+    laboratory_id INTEGER(8), -- SET FK
     start_time TIME,
     end_time TIME,
-    day TIME,
+    day VARCHAR(1),
 
     CHECK ( TIMEDIFF(end_time, start_time) >= 1),
     PRIMARY KEY (laboratory_id, start_time, end_time, day),
@@ -112,121 +119,258 @@ CREATE TABLE IF NOT EXISTS `lab_class_schedule` (
 );
 
 CREATE TABLE IF NOT EXISTS `org_students` (
-    student_id INTEGER, -- SET FK
-    organization_id INTEGER, -- SET FK
+    student_id INTEGER(8), -- SET FK
+    org_id INTEGER(8), -- SET FK
+    position VARCHAR(20),
 
-    PRIMARY KEY (student_id, organization_id),
+    PRIMARY KEY (student_id, org_id),
     FOREIGN KEY (student_id) REFERENCES student (student_id),
-    FOREIGN KEY (organization_id) REFERENCES organization (org_id)
+    FOREIGN KEY (org_id) REFERENCES organization (org_id)
 );
+
+
+
 
 /* SAMPLE DATA INSERT */
 /* NOTE: THIS SAMPLE DATA WAS GENERATED BY GEMINI */
+/* CORE ENTITIES (20 Records Each) */
 
-INSERT INTO `equipment` (`equipment_code`, `name`, `description`, `status`) VALUES
-(100001, 'Microscope', 'Standard compound light microscope', 'usable'),
-(100002, 'Beaker (500ml)', 'Glass beaker, 500ml capacity', 'usable'),
-(100003, 'Bunsen Burner', 'Standard lab gas burner', 'usable'),
-(100004, 'Test Tube Rack', 'Wooden rack, holds 12 tubes', 'usable'),
-(100005, 'Graduated Cylinder (100ml)', 'Glass cylinder, 100ml', 'broken'),
-(100006, 'Digital Scale', 'Measures up to 500g', 'usable'),
-(100007, 'Safety Goggles', 'Standard eye protection', 'usable'),
-(100008, 'Volumetric Flask (250ml)', 'Class A, 250ml', 'usable'),
-(100009, 'Microscope', 'Older model, slight blur', 'usable'),
-(100010, 'Bunsen Burner', 'Igniter is faulty', 'broken');
+INSERT INTO `equipment` (equipment_code, equipment_name, description, status) VALUES
+(10100100, 'Dell OptiPlex 7010', 'Standard issue desktop PC, Tower', 'usable'),
+(10100200, 'Epson PowerLite 1781', 'Ceiling-mounted projector', 'usable'),
+(10100300, 'Logitech K120', 'USB Keyboard', 'usable'),
+(10100400, 'Logitech M100', 'USB Mouse', 'usable'),
+(10100500, 'HDMI Cable', '6ft High-Speed HDMI Cable', 'usable'),
+(10200100, 'Raspberry Pi 4', 'Model B, 4GB RAM', 'usable'),
+(10200200, 'Arduino Uno R3', 'Microcontroller board', 'usable'),
+(10200300, 'Dell U2419H', '24-inch Monitor', 'broken'),
+(10200400, 'VR Headset', 'Oculus Quest 2', 'usable'),
+(10200500, 'Ethernet Cable', '25ft CAT6 Patch Cable', 'usable'),
+(10300100, 'Dell OptiPlex 7020', 'Standard issue desktop PC, SFF', 'usable'),
+(10300200, 'Logitech K120', 'USB Keyboard', 'broken'),
+(10300300, 'Logitech M100', 'USB Mouse', 'usable'),
+(10300400, 'VGA Cable', '10ft VGA Cable', 'usable'),
+(10300500, 'Lenovo ThinkCentre', 'Mini PC', 'usable'),
+(10400100, 'Solderless Breadboa', '830-point breadboard', 'usable'),
+(10400200, 'Jumper Wire Kit', 'Assorted M-M, M-F, F-F wires', 'usable'),
+(10400300, 'Samsung 27" Monitor', 'Curved 1080p Monitor', 'usable'),
+(10400400, 'Wacom Drawing Tab', 'Intuos Pro Medium', 'usable'),
+(10400500, 'TP-Link Router', 'Archer C7 AC1750', 'broken');
 
-INSERT INTO `student` (`student_id`, `first_name`, `last_name`) VALUES
-(20000001, 'Alice', 'Smith'),
-(20000002, 'Bob', 'Johnson'),
-(20000003, 'Charlie', 'Brown'),
-(20000004, 'David', 'Lee'),
-(20000005, 'Emily', 'Wang'),
-(20000006, 'Fiona', 'Chen'),
-(20000007, 'George', 'Kim'),
-(20000008, 'Hannah', 'Davis'),
-(20000009, 'Ian', 'Miller'),
-(20000010, 'Jane', 'Wilson');
+INSERT INTO `student` (student_id, first_name, last_name, course, year_level, enrollment_status, email) VALUES
+(12010001, 'Alice', 'Johnson', 'BSCS', 4, 'enrolled', 'alice.johnson@dlsu.edu.ph'),
+(12010002, 'Bob', 'Smith', 'BSIT', 3, 'enrolled', 'bob.smith@dlsu.edu.ph'),
+(12010003, 'Carol', 'Williams', 'BSEE', 2, 'enrolled', 'carol.williams@dlsu.edu.ph'),
+(12010004, 'David', 'Brown', 'BSCS', 4, 'not enrolled', 'david.brown@dlsu.edu.ph'),
+(12110001, 'Eve', 'Davis', 'BSIT', 1, 'enrolled', 'eve.davis@dlsu.edu.ph'),
+(12110002, 'Frank', 'Miller', 'BSCS', 2, 'enrolled', 'frank.miller@dlsu.edu.ph'),
+(12110003, 'Grace', 'Wilson', 'BSEE', 3, 'enrolled', 'grace.wilson@dlsu.edu.ph'),
+(12110004, 'Heidi', 'Moore', 'BSIT', 4, 'enrolled', 'heidi.moore@dlsu.edu.ph'),
+(12210001, 'Ivan', 'Taylor', 'BSCS', 1, 'enrolled', 'ivan.taylor@dlsu.edu.ph'),
+(12210002, 'Judy', 'Anderson', 'BSIT', 2, 'not enrolled', 'judy.anderson@dlsu.edu.ph'),
+(12210003, 'Liam', 'Thomas', 'BSCS', 3, 'enrolled', 'liam.thomas@dlsu.edu.ph'),
+(12210004, 'Olivia', 'Jackson', 'BSIT', 4, 'enrolled', 'olivia.jackson@dlsu.edu.ph'),
+(12310001, 'Noah', 'White', 'BSEE', 1, 'enrolled', 'noah.white@dlsu.edu.ph'),
+(12310002, 'Emma', 'Harris', 'BSCS', 2, 'enrolled', 'emma.harris@dlsu.edu.ph'),
+(12310003, 'Sophia', 'Martin', 'BSIT', 3, 'enrolled', 'sophia.martin@dlsu.edu.ph'),
+(12310004, 'Mason', 'Thompson', 'BSCS', 4, 'not enrolled', 'mason.thompson@dlsu.edu.ph'),
+(12410001, 'Ava', 'Garcia', 'BSEE', 1, 'enrolled', 'ava.garcia@dlsu.edu.ph'),
+(12410002, 'William', 'Martinez', 'BSIT', 2, 'enrolled', 'william.martinez@dlsu.edu.ph'),
+(12510001, 'Isabella', 'Robinson', 'BSCS', 3, 'enrolled', 'isabella.robinson@dlsu.edu.ph'),
+(12510002, 'James', 'Clark', 'BSIT', 4, 'enrolled', 'james.clark@dlsu.edu.ph');
 
-INSERT INTO `lab_technician` (`lab_tech_id`, `first_name`, `last_name`) VALUES
-(30000001, 'Martin', 'Price'),
-(30000002, 'Sarah', 'Connor'),
-(30000003, 'Kyle', 'Reese'),
-(30000004, 'John', 'Doe'),
-(30000005, 'Lisa', 'Ray'),
-(30000006, 'Tom', 'Harris'),
-(30000007, 'Nancy', 'Drew'),
-(30000008, 'Peter', 'Venkman'),
-(30000009, 'Dana', 'Scully'),
-(30000010, 'Fox', 'Mulder');
+INSERT INTO `lab_technician` (lab_tech_id, first_name, last_name, email) VALUES
+(10001001, 'Michael', 'Scott', 'michael.scott@dlsu.edu.ph'),
+(10001002, 'Pamela', 'Beesly', 'pamela.beesly@dlsu.edu.ph'),
+(10001003, 'James', 'Halpert', 'james.halpert@dlsu.edu.ph'),
+(10002001, 'Dwight', 'Schrute', 'dwight.schrute@dlsu.edu.ph'),
+(10002002, 'Angela', 'Martin', 'angela.martin@dlsu.edu.ph'),
+(10002003, 'Kevin', 'Malone', 'kevin.malone@dlsu.edu.ph'),
+(10003001, 'Oscar', 'Martinez', 'oscar.martinez@dlsu.edu.ph'),
+(10003002, 'Stanley', 'Hudson', 'stanley.hudson@dlsu.edu.ph'),
+(10003003, 'Phyllis', 'Vance', 'phyllis.vance@dlsu.edu.ph'),
+(10004001, 'Meredith', 'Palmer', 'meredith.palmer@dlsu.edu.ph'),
+(10004002, 'Creed', 'Bratton', 'creed.bratton@dlsu.edu.ph'),
+(10004003, 'Toby', 'Flenderson', 'toby.flenderson@dlsu.edu.ph'),
+(10005001, 'Ryan', 'Howard', 'ryan.howard@dlsu.edu.ph'),
+(10005002, 'Kelly', 'Kapoor', 'kelly.kapoor@dlsu.edu.ph'),
+(10005003, 'Erin', 'Hannon', 'erin.hannon@dlsu.edu.ph'),
+(10006001, 'Andy', 'Bernard', 'andy.bernard@dlsu.edu.ph'),
+(10006002, 'Darryl', 'Philbin', 'darryl.philbin@dlsu.edu.ph'),
+(10006003, 'Holly', 'Flax', 'holly.flax@dlsu.edu.ph'),
+(10007001, 'Jan', 'Levinson', 'jan.levinson@dlsu.edu.ph'),
+(10007002, 'David', 'Wallace', 'david.wallace@dlsu.edu.ph');
 
-INSERT INTO `organization` (`org_id`, `org_name`) VALUES
-(101, 'Chemistry Club'),
-(102, 'Biology Society'),
-(103, 'Physics Club'),
-(104, 'Engineering Guild'),
-(105, 'Robotics Team'),
-(106, 'Pre-Med Association'),
-(107, 'Computer Science Society'),
-(108, 'Aeronautics Club'),
-(109, 'Marine Biology Group'),
-(110, 'Botany Enthusiasts');
+INSERT INTO `organization` (org_id, org_name, org_email) VALUES
+(30000001, 'CompSoc', 'compsoc@dlsu.edu.ph'),
+(30000002, 'IEEE', 'ieee@dlsu.edu.ph'),
+(30000003, 'Coders Club', 'coders@dlsu.edu.ph'),
+(30000004, 'GameDev Guild', 'gamedev@dlsu.edu.ph'),
+(30000005, 'Data Science PH', 'datasci@dlsu.edu.ph'),
+(30000006, 'CyberSec', 'cybersec@dlsu.edu.ph'),
+(30000007, 'AI Society', 'ai.soc@dlsu.edu.ph'),
+(30000008, 'IT Hub', 'ithub@dlsu.edu.ph'),
+(30000009, 'Robotics Org', 'robotics@dlsu.edu.ph'),
+(30000010, 'Web Weavers', 'webdev@dlsu.edu.ph'),
+(30000011, 'UX Society', 'ux.soc@dlsu.edu.ph'),
+(30000012, 'Mobile Dev Club', 'mobiledev@dlsu.edu.ph'),
+(30000013, 'Hardware Hackers', 'hackers@dlsu.edu.ph'),
+(30000014, 'E-Sports', 'esports@dlsu.edu.ph'),
+(30000015, 'Tech Innovators', 'tech.inno@dlsu.edu.ph'),
+(30000016, 'WICS', 'wics@dlsu.edu.ph'),
+(30000017, 'InfoSys Society', 'infosys@dlsu.edu.ph'),
+(30000018, 'Consulting Group', 'consulting@dlsu.edu.ph'),
+(30000019, 'Entrepreneurs', 'entrep@dlsu.edu.ph'),
+(30000020, 'Open Source', 'opensource@dlsu.edu.ph');
 
-INSERT INTO `laboratory` (`lab_code`, `lab_name`, `description`, `capacity`) VALUES
-(501, 'Chem 1', 'General Chemistry Laboratory', 30),
-(502, 'Bio 1', 'General Biology Laboratory', 25),
-(503, 'Phys 1', 'General Physics Laboratory', 20),
-(504, 'CS 1', 'Computer Science Lab (Linux)', 40),
-(505, 'Eng 1', 'Engineering Workshop', 15),
-(506, 'Chem 2', 'Organic Chemistry Lab', 20),
-(507, 'Bio 2', 'Microbiology Lab', 25),
-(508, 'CS 2', 'Computer Science Lab (Windows)', 40),
-(509, 'Phys 2', 'Optics Lab', 15),
-(510, 'Research', 'Faculty Research Lab', 10);
+INSERT INTO `laboratory` (lab_code, lab_location, description, capacity) VALUES
+(40000001, 'Goks 101', 'General Computer Lab', 40),
+(40000002, 'Goks 102', 'Networking Lab', 30),
+(40000003, 'Goks 205', 'Multimedia Lab', 35),
+(40000004, 'Goks 206', 'Database Systems Lab', 25),
+(40000005, 'Velasco 301', 'AI & Robotics Lab', 20),
+(40000006, 'Velasco 302', 'Hardware Lab (BSEE)', 25),
+(40000007, 'Goks 103', 'General Computer Lab 2', 40),
+(40000008, 'Goks 207', 'Mobile Dev Lab', 30),
+(40000009, 'Velasco 303', 'Cybersecurity Lab', 20),
+(40000010, 'Goks 104', 'Capstone Project Lab', 30),
+(40000011, 'Goks 301', 'General Computer Lab 3', 40),
+(40000012, 'Goks 302', 'Data Science Lab', 30),
+(40000013, 'Velasco 401', 'VR/AR Lab', 20),
+(40000014, 'Goks 305', 'Research Lab 1', 15),
+(40000015, 'Goks 306', 'Research Lab 2', 15),
+(40000016, 'Velasco 402', 'Embedded Systems Lab', 25),
+(40000017, 'Goks 401', 'Mac Lab (Multimedia)', 35),
+(40000018, 'Goks 402', 'Open Lab (Quiet)', 50),
+(40000019, 'Velasco 403', 'Photonics Lab', 20),
+(40000020, 'Goks 404', 'Cloud Computing Lab', 30);
 
-INSERT INTO `equipment_transaction_log` (`transaction_id`, `student_id`, `equipment_id`, `lab_tech_id`, `date`, `remarks`, `status`) VALUES
-(1, 20000001, 100001, 30000001, '2025-10-01', 'For Bio 101 class', 'borrowed'),
-(2, 20000002, 100002, 30000001, '2025-10-01', 'For Chem 101 experiment', 'borrowed'),
-(3, 20000001, 100001, 30000001, '2025-10-02', 'Returned in good condition', 'returned'),
-(4, 20000003, 100005, 30000002, '2025-10-03', 'Student reported it was already cracked', 'borrowed'),
-(5, 20000003, 100005, 30000002, '2025-10-03', 'Confirmed crack, marked as broken', 'broken'),
-(6, 20000004, 100006, 30000003, '2025-10-04', 'Borrowing for physics project', 'borrowed'),
-(7, 20000005, 100007, 30000004, '2025-10-05', 'Standard procedure for lab entry', 'borrowed'),
-(8, 20000005, 100007, 30000004, '2025-10-05', 'Returned after lab session', 'returned'),
-(9, 20000006, 100003, 30000001, '2025-10-06', 'Borrowing for Chem 2 lab', 'borrowed'),
-(10, 20000007, 100010, 30000005, '2025-10-07', 'Student reported faulty igniter', 'broken');
+/* TRANSACTION & SECONDARY ENTITIES (30 Records Each) */
 
-INSERT INTO `lab_reservation_log` (`reservation_id`, `organization_id`, `laboratory_id`, `lab_tech_id`, `date`, `reservation_date`, `start_time`, `end_time`, `remarks`, `status`) VALUES
-(1001, 101, 501, 30000001, '2025-10-01', '2025-10-15', '17:00:00', '19:00:00', 'Chemistry Club monthly meeting', 'reserved'),
-(1002, 102, 502, 30000002, '2025-10-02', '2025-10-16', '18:00:00', '20:00:00', 'Biology Society speaker event', 'reserved'),
-(1003, 105, 505, 30000003, '2025-10-03', '2025-10-17', '15:00:00', '18:00:00', 'Robotics Team build session', 'reserved'),
-(1004, 107, 504, 30000004, '2025-10-04', '2025-10-18', '17:00:00', '21:00:00', 'CS Society coding competition', 'reserved'),
-(1005, 103, 503, 30000005, '2025-10-05', '2025-10-19', '16:00:00', '18:00:00', 'Physics Club experiment demo', 'reserved'),
-(1006, 101, 501, 30000001, '2025-10-06', '2025-10-20', '17:00:00', '19:00:00', 'Meeting cancelled, room needed for class', 'cancelled'),
-(1007, 104, 505, 30000003, '2025-10-07', '2025-10-21', '14:00:00', '17:00:00', 'Engineering Guild project work', 'reserved'),
-(1008, 106, 507, 30000002, '2025-10-08', '2025-10-22', '18:00:00', '20:00:00', 'Pre-Med guest lecture', 'reserved'),
-(1009, 108, 503, 30000005, '2025-10-09', '2025-10-23', '16:00:00', '18:00:00', 'Aeronautics Club weekly meeting', 'reserved'),
-(1010, 109, 502, 30000002, '2025-10-10', '2025-10-24', '17:00:00', '19:00:00', 'Marine Biology film screening', 'reserved');
+INSERT INTO `equipment_transaction_log` (transaction_id, student_id, equipment_id, labtech_id, transaction_date, remarks, status) VALUES
+(50000001, 12010001, 10100100, 10001001, '2025-10-01', 'Borrowed for thesis', 'borrowed'),
+(50000002, 12010002, 10100500, 10001002, '2025-10-01', 'Class presentation', 'borrowed'),
+(50000003, 12010002, 10100500, 10001002, '2025-10-01', 'Returned OK', 'returned'),
+(50000004, 12010003, 10200200, 10001003, '2025-10-02', 'Robotics project', 'borrowed'),
+(50000005, 12110001, 10200100, 10001001, '2025-10-03', 'IoT project', 'borrowed'),
+(50000006, 12010001, 10100100, 10001001, '2025-10-04', 'Returned, slight wear', 'returned'),
+(50000007, 12110002, 10200400, 10002001, '2025-10-05', 'VR Dev', 'borrowed'),
+(50000008, 12110003, 10200300, 10002002, '2025-10-05', 'Student reported flickering', 'broken'),
+(50000009, 12110004, 10200500, 10001001, '2025-10-06', 'Need for networking lab', 'borrowed'),
+(50000010, 12010003, 10200200, 10001003, '2025-10-07', 'Student bought replacement', 'replaced'),
+(50000011, 12210001, 10400100, 10003001, '2025-10-08', 'Hardware class', 'borrowed'),
+(50000012, 12210001, 10400100, 10003001, '2025-10-08', 'Returned same day', 'returned'),
+(50000013, 12210002, 10100300, 10003002, '2025-10-09', 'Keyboard stopped working', 'broken'),
+(50000014, 12210003, 10400400, 10003003, '2025-10-10', 'Multimedia project', 'borrowed'),
+(50000015, 12210004, 10100400, 10004001, '2025-10-11', 'Mouse sticky', 'borrowed'),
+(50000016, 12210004, 10100400, 10004001, '2025-10-11', 'Cleaned and returned', 'returned'),
+(50000017, 12310001, 10200200, 10004002, '2025-10-12', 'BSEE Project', 'borrowed'),
+(50000018, 12310002, 10300500, 10004003, '2025-10-13', 'Capstone project server', 'borrowed'),
+(50000019, 12310003, 10100100, 10005001, '2025-10-14', 'Lab 101 PC 5', 'borrowed'),
+(50000020, 12310004, 10100200, 10005002, '2025-10-15', 'Presentation practice', 'borrowed'),
+(50000021, 12310004, 10100200, 10005002, '2025-10-15', 'Returned projector', 'returned'),
+(50000022, 12410001, 10400100, 10005003, '2025-10-16', 'Borrowing breadboard', 'borrowed'),
+(50000023, 12410002, 10400200, 10006001, '2025-10-17', 'Jumper wires', 'borrowed'),
+(50000024, 12510001, 10400300, 10006002, '2025-10-18', 'External monitor for laptop', 'borrowed'),
+(50000025, 12510002, 10200400, 10006003, '2025-10-19', 'VR Dev club trial', 'borrowed'),
+(50000026, 12410001, 10400100, 10005003, '2025-10-19', 'Returned breadboard', 'returned'),
+(50000027, 12510002, 10200400, 10006003, '2025-10-19', 'VR returned', 'returned'),
+(50000028, 12510001, 10400300, 10006002, '2025-10-20', 'Monitor returned', 'returned'),
+(50000029, 12310002, 10300500, 10004003, '2025-10-21', 'Capstone server returned', 'returned'),
+(50000030, 12110002, 10200400, 10002001, '2025-10-22', 'VR Dev returned', 'returned');
 
-INSERT INTO `lab_class_schedule` (`laboratory_id`, `start_time`, `end_time`, `day`) VALUES
-(501, '08:00:00', '09:50:00', '01:00:00'), -- Lab 501, 8:00-9:50, Monday
-(501, '10:00:00', '11:50:00', '01:00:00'), -- Lab 501, 10:00-11:50, Monday
-(502, '08:00:00', '09:50:00', '02:00:00'), -- Lab 502, 8:00-9:50, Tuesday
-(502, '13:00:00', '14:50:00', '02:00:00'), -- Lab 502, 13:00-14:50, Tuesday
-(503, '10:00:00', '11:50:00', '03:00:00'), -- Lab 503, 10:00-11:50, Wednesday
-(504, '13:00:00', '14:50:00', '03:00:00'), -- Lab 504, 13:00-14:50, Wednesday
-(504, '15:00:00', '16:50:00', '03:00:00'), -- Lab 504, 15:00-16:50, Wednesday
-(505, '09:00:00', '11:50:00', '04:00:00'), -- Lab 505, 9:00-11:50, Thursday
-(506, '10:00:00', '12:50:00', '05:00:00'), -- Lab 506, 10:00-12:50, Friday
-(507, '14:00:00', '15:50:00', '01:00:00'); -- Lab 507, 14:00-15:50, Monday
+INSERT INTO `lab_reservation_log` (reservation_id, organization_id, laboratory_id, labtech_id, transaction, reservation_date, start_time, end_time, remarks, status) VALUES
+(60000001, 30000001, 40000001, 10001001, '2025-10-10', '2025-11-15', '09:00:00', '12:00:00', 'CompSoc General Assembly', 'reserved'),
+(60000002, 30000003, 40000003, 10001002, '2025-10-11', '2025-11-16', '13:00:00', '17:00:00', 'Coders Club Hackathon', 'reserved'),
+(60000003, 30000002, 40000002, 10001003, '2025-10-12', '2025-11-17', '10:00:00', '14:00:00', 'IEEE Networking Workshop', 'reserved'),
+(60000004, 30000004, 40000003, 10001001, '2025-10-13', '2025-11-18', '09:00:00', '17:00:00', 'GameDev Guild Game Jam', 'reserved'),
+(60000005, 30000001, 40000001, 10001002, '2025-10-14', '2025-11-20', '13:00:00', '15:00:00', 'Meeting - Cancelled', 'cancelled'),
+(60000006, 30000005, 40000012, 10002001, '2025-10-15', '2025-11-21', '09:00:00', '12:00:00', 'Data Science PH Talk', 'reserved'),
+(60000007, 30000006, 40000009, 10002002, '2025-10-15', '2025-11-22', '10:00:00', '15:00:00', 'CyberSec CTF Event', 'reserved'),
+(60000008, 30000007, 40000005, 10002003, '2025-10-16', '2025-11-23', '13:00:00', '16:00:00', 'AI Society Python Workshop', 'reserved'),
+(60000009, 30000009, 40000005, 10003001, '2025-10-17', '2025-11-24', '14:00:00', '17:00:00', 'Robotics Org Meeting', 'reserved'),
+(60000010, 30000010, 40000008, 10003002, '2025-10-18', '2025-11-25', '09:00:00', '11:00:00', 'Web Weavers React Intro', 'reserved'),
+(60000011, 30000011, 40000003, 10003003, '2025-10-19', '2025-11-26', '10:00:00', '12:00:00', 'UX Society Figma Workshop', 'reserved'),
+(60000012, 30000012, 40000008, 10004001, '2025-10-20', '2025-11-27', '13:00:00', '16:00:00', 'Mobile Dev Flutter Talk', 'reserved'),
+(60000013, 30000013, 40000006, 10004002, '2025-10-20', '2025-11-28', '10:00:00', '17:00:00', 'Hardware Hackers Soldering', 'reserved'),
+(60000014, 30000014, 40000001, 10004003, '2025-10-21', '2025-11-29', '09:00:00', '17:00:00', 'E-Sports Tournament', 'reserved'),
+(60000015, 30000016, 40000007, 10005001, '2025-10-22', '2025-11-30', '13:00:00', '15:00:00', 'WICS Mentorship Event', 'reserved'),
+(60000016, 30000001, 40000001, 10001001, '2025-10-23', '2025-12-01', '10:00:00', '12:00:00', 'CompSoc Officers Meeting', 'reserved'),
+(60000017, 30000002, 40000002, 10001003, '2025-10-23', '2025-12-01', '14:00:00', '16:00:00', 'IEEE Committee Meeting', 'reserved'),
+(60000018, 30000003, 40000003, 10001002, '2025-10-24', '2025-12-02', '10:00:00', '12:00:00', 'Coders Club Planning', 'reserved'),
+(60000019, 30000004, 40000003, 10001001, '2025-10-24', '2025-12-02', '13:00:00', '15:00:00', 'GameDev Meeting', 'reserved'),
+(60000020, 30000005, 40000012, 10002001, '2025-10-25', '2025-12-03', '10:00:00', '13:00:00', 'Data Sci Project Pitch', 'reserved'),
+(60000021, 30000006, 40000009, 10002002, '2025-10-25', '2025-12-03', '14:00:00', '16:00:00', 'CyberSec Workshop Prep', 'reserved'),
+(60000022, 30000007, 40000005, 10002003, '2025-10-26', '2025-12-04', '10:00:00', '12:00:00', 'AI Society Project Demo', 'reserved'),
+(60000023, 30000009, 40000005, 10003001, '2025-10-26', '2025-12-04', '13:00:00', '15:00:00', 'Robotics Org Build Session', 'reserved'),
+(60000024, 30000010, 40000008, 10003002, '2025-10-27', '2025-12-05', '09:00:00', '12:00:00', 'Web Weavers Showcase', 'reserved'),
+(60000025, 30000011, 40000003, 10003003, '2025-10-27', '2025-12-05', '14:00:00', '17:00:00', 'UX Society Critiquing', 'reserved'),
+(60000026, 30000012, 40000008, 10004001, '2025-10-28', '2025-12-06', '10:00:00', '14:00:00', 'Mobile Dev App Demo', 'reserved'),
+(60000027, 30000013, 40000006, 10004002, '2025-10-28', '2025-12-06', '13:00:00', '17:00:00', 'Hardware Hackers Open Lab', 'reserved'),
+(60000028, 30000014, 40000001, 10004003, '2025-10-29', '2025-12-07', '09:00:00', '17:00:00', 'E-Sports Finals', 'reserved'),
+(60000029, 30000016, 40000007, 10005001, '2025-10-30', '2025-12-08', '13:00:00', '16:00:00', 'WICS Alumnae Talk', 'reserved'),
+(60000030, 30000017, 40000004, 10005002, '2025-10-31', '2025-12-09', '10:00:00', '12:00:00', 'InfoSys Society Meeting', 'cancelled');
 
-INSERT INTO `org_students` (`student_id`, `organization_id`) VALUES
-(20000001, 101), -- Alice in Chemistry Club
-(20000001, 102), -- Alice in Biology Society
-(20000002, 101), -- Bob in Chemistry Club
-(20000003, 103), -- Charlie in Physics Club
-(20000004, 107), -- David in Computer Science Society
-(20000005, 107), -- Emily in Computer Science Society
-(20000005, 105), -- Emily in Robotics Team
-(20000006, 106), -- Fiona in Pre-Med Association
-(20000007, 104), -- George in Engineering Guild
-(20000008, 102); -- Hannah in Biology Society
+INSERT INTO `lab_class_schedule` (laboratory_id, start_time, end_time, day) VALUES
+(40000001, '08:00:00', '11:00:00', 'M'),
+(40000001, '13:00:00', '16:00:00', 'T'),
+(40000001, '08:00:00', '11:00:00', 'W'),
+(40000002, '09:00:00', '12:00:00', 'W'),
+(40000002, '14:00:00', '17:00:00', 'T'),
+(40000002, '09:00:00', '12:00:00', 'F'),
+(40000003, '08:00:00', '10:00:00', 'F'),
+(40000003, '10:00:00', '12:00:00', 'M'),
+(40000003, '13:00:00', '15:00:00', 'W'),
+(40000004, '14:00:00', '17:00:00', 'M'),
+(40000004, '09:00:00', '12:00:00', 'T'),
+(40000004, '14:00:00', '17:00:00', 'F'),
+(40000005, '10:00:00', '13:00:00', 'T'),
+(40000005, '10:00:00', '13:00:00', 'H'),
+(40000006, '08:00:00', '12:00:00', 'M'),
+(40000006, '08:00:00', '12:00:00', 'W'),
+(40000007, '08:00:00', '11:00:00', 'T'),
+(40000007, '13:00:00', '16:00:00', 'F'),
+(40000007, '13:00:00', '16:00:00', 'M'),
+(40000008, '09:00:00', '11:00:00', 'T'),
+(40000008, '09:00:00', '11:00:00', 'H'),
+(40000009, '14:00:00', '17:00:00', 'T'),
+(40000009, '14:00:00', '17:00:00', 'W'),
+(40000010, '08:00:00', '17:00:00', 'F'),
+(40000011, '11:00:00', '14:00:00', 'M'),
+(40000011, '11:00:00', '14:00:00', 'W'),
+(40000012, '13:00:00', '16:00:00', 'T'),
+(40000013, '09:00:00', '12:00:00', 'T'),
+(40000016, '10:00:00', '13:00:00', 'F'),
+(40000017, '13:00:00', '15:00:00', 'M');
+
+INSERT INTO `org_students` (student_id, org_id, position) VALUES
+(12010001, 30000001, 'President'),
+(12010002, 30000001, 'Member'),
+(12010003, 30000002, 'Vice President'),
+(12110001, 30000003, 'Member'),
+(12110002, 30000001, 'Secretary'),
+(12110003, 30000002, 'Member'),
+(12110004, 30000003, 'President'),
+(12210001, 30000004, 'Member'),
+(12210002, 30000005, 'Member'),
+(12010001, 30000002, 'Member'),
+(12210003, 30000006, 'Officer'),
+(12210004, 30000007, 'Member'),
+(12310001, 30000009, 'Member'),
+(12310002, 30000001, 'PRO'),
+(12310003, 30000008, 'Vice President'),
+(12310004, 30000001, 'Member'),
+(12410001, 30000002, 'Treasurer'),
+(12410002, 30000003, 'Member'),
+(12510001, 30000004, 'President'),
+(12510002, 30000010, 'Member'),
+(12010002, 30000008, 'Member'),
+(12110001, 30000001, 'Member'),
+(12110003, 30000011, 'Officer'),
+(12210001, 30000013, 'Member'),
+(12210002, 30000001, 'Member'),
+(12310001, 30000002, 'Member'),
+(12310002, 30000003, 'Secretary'),
+(12410001, 30000016, 'President'),
+(12410002, 30000017, 'Member'),
+(12510001, 30000001, 'Member');
