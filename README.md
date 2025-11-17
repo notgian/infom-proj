@@ -6,7 +6,7 @@ Okay so when you install Maven it automatically downloads JavaFX
  
 # Install
 1.  Maven
-```sh
+```
 winget install Apache.Maven
 ```
 # Open VS Code and install these extensions:
@@ -25,6 +25,6 @@ ensure:
 	•	Maven is installed
 	•	pom.xml contains JavaFX modules
 
-```sh
+```
 mvn javafx:run
 ```
