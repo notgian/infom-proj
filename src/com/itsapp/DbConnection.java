@@ -160,7 +160,7 @@ class DbConnection {
             String queryB = """
                 SELECT * FROM `equipment_transaction_log` 
                     WHERE student_id = %d
-                    ORDER BY transaction_date DESC 
+                    ORDER BY transaction_date DESC, transaction_id DESC
                 """.formatted(id);
     
             PreparedStatement stmtB = this.Conn.prepareStatement(queryB);
@@ -218,7 +218,7 @@ class DbConnection {
             String queryB = """
                 SELECT * FROM `equipment_transaction_log` 
                     WHERE student_id = %d
-                    ORDER BY transaction_date DESC 
+                    ORDER BY transaction_date DESC, transaction_id DESC
                 """.formatted(student_id);
             PreparedStatement stmtB = this.Conn.prepareStatement(queryB);
             ResultSet resB = stmtB.executeQuery();
@@ -252,14 +252,14 @@ class DbConnection {
             ResultSet availResA = availStmtA.executeQuery();
             availResA.next();
 
-            if (availResA.getString("status") == "broken")
+            if (availResA.getString("status").equals("broken"))
                 return "Operation failed! The specified equipment is broken and cannot be borrowed at the moment.";
 
             // Checking if equipment is in use
             String availabilityQueryB = """
                 SELECT * FROM equipment_transaction_log 
                     WHERE equipment_id = %d
-                    ORDER BY transaction_date DESC
+                    ORDER BY transaction_date DESC, transaction_id DESC
                 """.formatted(equipment_code);
             PreparedStatement availStmtB = this.Conn.prepareStatement(availabilityQueryB);
             ResultSet availResB = availStmtB.executeQuery();
@@ -283,7 +283,7 @@ class DbConnection {
             // Get the transaction_id to display
             String getTIDQuery = """ 
                 SELECT transaction_id FROM equipment_transaction_log
-                    ORDER BY transaction_date DESC
+                    ORDER BY transaction_date DESC, transaction_id DESC
                 """; 
             ResultSet TIDres = this.Conn.prepareStatement(getTIDQuery)
                 .executeQuery();
@@ -315,23 +315,19 @@ class DbConnection {
     }
 
     /**
+     * Implements the equipment return transaction.
      *
+     *  @param student_id the student id
+     *  @param equipment_code the equipment code
+     *  @param lab_tech_id the attending lab_technician's id
+     *  @param remarks remarks to add to the transaction.
+     *  @param broken whether this equipment in this return is being marked
+     *  as broken
      *
-     *
+     *  @return a message to display in the application. Regardless of whether
+     *  the message is an error message or not, it will be returned the same.
      */
     public String returnEquipment(int student_id, int equipment_code, int lab_tech_id, String remarks, boolean broken) {
-        // Viewing the student record to verify that they are a student enrolled in the system.
-        // Viewing the Equipment Borrowing Log to verify that the student had borrowed equipment previously
-        // Checking equipment to ensure no damage was done.
-        // If damage was done to the equipment:
-            // Updating the equipment record to update the status to be “Unavailable.”
-        // If no damage as done to the equipment:
-            // Viewing the record of the equipment to verify the equipment being returned. 
-            // Updating the corresponding entry in the equipment record to reflect its availability.
-            // Updating the borrow log to reflect that the student is no longer borrowing the equipment.
-            // Recording the lab technician who processed the return of equipment.
-            // Recording the transaction into the Equipment Return Log.
-
         try {
             if (!this.isValidStudent(student_id))
                 return "Operation failed! Given student_id is not a valid student.";
@@ -343,7 +339,7 @@ class DbConnection {
             String queryA = """
                 SELECT * FROM `equipment_transaction_log` 
                     WHERE student_id = %d
-                    ORDER BY transaction_date DESC 
+                    ORDER BY transaction_date DESC, transaction_id DESC
                 """.formatted(student_id);
     
             PreparedStatement stmtA = this.Conn.prepareStatement(queryA);
@@ -391,7 +387,7 @@ class DbConnection {
             int affected = rtrnUpdStmt.executeUpdate();
             String getTIDQuery = """ 
                 SELECT transaction_id FROM equipment_transaction_log
-                    ORDER BY transaction_date DESC
+                    ORDER BY transaction_date DESC, transaction_id DESC
                 """; 
             ResultSet TIDres = this.Conn.prepareStatement(getTIDQuery)
                 .executeQuery();
@@ -409,5 +405,110 @@ class DbConnection {
             e.printStackTrace();
         }
         return "Something went wrong... please try again.";
+    }
+    
+    /**
+     * Implementation of the return equipment transaction with no
+     * remarks.
+     *
+     *  @param student_id the student id
+     *  @param equipment_code the equipment code
+     *  @param lab_tech_id the attending lab_technician's id
+     *  @param remarks remarks to add to the transaction.
+     *  @param broken whether this equipment in this return is being marked
+     *
+     */
+    public String returnEquipment(int student_id, int equipment_code, int lab_tech_id, boolean broken) {
+        return returnEquipment(student_id, equipment_code, lab_tech_id, "", broken);
+    }
+
+    public String replaceEquipment(int student_id, int lab_tech_id, String new_equipment_name, String new_equipment_desc) {
+        try {
+            // Viewing the student record to verify that they are a student enrolled in the system.
+            if (!this.isValidStudent(student_id))
+                return "Operation failed! Given student_id is not a valid student.";
+
+            // Checking for previous incident
+            // Viewing the equipment record to verify that the equipment to be replaced was indeed broken.
+            // Viewing the borrowing log to verify that a previous incident with the student and the equipment had occurred. 
+            String hasPrevIncdtQry = """ 
+                SELECT equipment_id, status FROM equipment_transaction_log 
+                    WHERE student_id = %d
+                    ORDER BY transaction_date DESC, transaction_id DESC
+                """.formatted(student_id);
+            PreparedStatement hasPrevIncdtStmt = this.Conn.prepareStatement(hasPrevIncdtQry);
+            ResultSet hasPrevIncdtRes = hasPrevIncdtStmt.executeQuery();
+            Boolean hasPreviousIncident = null;
+
+            // No entries
+            if (!hasPrevIncdtRes.next())
+                hasPreviousIncident = false;
+
+            if (hasPreviousIncident == null) {
+                // Checking if there is an incident (status is "broken") 
+                String status = hasPrevIncdtRes.getString("status");
+                if (status.equals("broken"))
+                    hasPreviousIncident = true;
+                else 
+                    hasPreviousIncident = false;
+            }
+
+            if (!hasPreviousIncident)
+                return "Operation failed! Student has no incident to resolve. There is no equipment that needs to be returned.";
+
+            int brokenEquipmentId = hasPrevIncdtRes.getInt("equipment_id");
+            
+            // Getting new equipment id
+            PreparedStatement equipmentCodeStmt = this.Conn.prepareStatement("SELECT equipment_code FROM equipment ORDER BY equipment_code DESC");
+            ResultSet equipmentCodeRes = equipmentCodeStmt.executeQuery();
+
+            // Handling an edge case
+            if (!equipmentCodeRes.next())
+                return "Something went wrong... it seems that there are no equipment in the equipment record.";
+
+            int nextEquipmentCode = equipmentCodeRes.getInt("equipment_code") + 1;
+
+            // Updating the equipment record to add the replacement equipment provided by the student.
+
+            String updNewEquipmentQry = """ 
+                INSERT INTO `equipment` 
+                    (equipment_code, equipment_name, description, status) VALUES
+                    (%d, "%s", "%s", "usable")
+                """.formatted(nextEquipmentCode, 
+                                new_equipment_name.substring(0, Math.min(20, new_equipment_name.length())), 
+                                new_equipment_desc.substring(0, Math.min(100, new_equipment_desc.length())) );
+           
+            PreparedStatement updNewEquipmentStmt = this.Conn.prepareStatement(updNewEquipmentQry);
+            int updNewEquipmentRes = updNewEquipmentStmt.executeUpdate();
+
+            if (updNewEquipmentRes < 1)
+                return "Something went wrong... new equipment could not be added.";
+
+            // Updating the borrowing log to resolve the previous incident.
+            String replacementUpdQuery = """ 
+                INSERT INTO `equipment_transaction_log` 
+                    (student_id, equipment_id, labtech_id, transaction_date, remarks, status) VALUES
+                    (%d, %d, %d, NOW(), "%s", "%s");
+                """.formatted(student_id, nextEquipmentCode, lab_tech_id, "Replacement for " + brokenEquipmentId, "replaced");
+            PreparedStatement rplUpdStmt = this.Conn.prepareStatement(replacementUpdQuery);
+            int affected = rplUpdStmt.executeUpdate();
+
+            // Get the transaction_id to display
+            String getTIDQuery = """ 
+                SELECT transaction_id FROM equipment_transaction_log
+                    ORDER BY transaction_date DESC, transaction_id DESC
+                """; 
+            ResultSet TIDres = this.Conn.prepareStatement(getTIDQuery)
+                .executeQuery();
+            TIDres.next();
+            int transactionID = TIDres.getInt("transaction_id");
+                return "Equipment replacement operation completed! (Transaction ID: %d) (%d rows affected)".formatted(transactionID, affected);
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // A default return
+        return "Something went wrong...";
     }
 }

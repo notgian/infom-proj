@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `laboratory` (
 
 -- For recording equipment-related transactions
 CREATE TABLE IF NOT EXISTS `equipment_transaction_log` (
-    transaction_id INTEGER(8) NOT NULL AUTO INCREMENT,
+    transaction_id INTEGER(8) NOT NULL AUTO_INCREMENT,
     student_id INTEGER, -- SET FK
     equipment_id INTEGER, -- SET KN
     labtech_id INTEGER, -- SET FK
@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS `equipment_transaction_log` (
 ALTER TABLE `equipment_transaction_log` AUTO_INCREMENT=10000000;
 
 CREATE TABLE IF NOT EXISTS `lab_reservation_log` ( -- unlike the equipment borrow/return log will have reservations listed here. Cancelled reserations will be flagged as such
-    reservation_id INTEGER(8) NOT NULL AUTO INCREMENT,
+    reservation_id INTEGER(8) NOT NULL AUTO_INCREMENT,
     organization_id INTEGER(8), -- SET FK
     laboratory_id INTEGER(8), -- SET FK
     labtech_id INTEGER(8), -- SET FK
