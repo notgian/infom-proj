@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 /**
  * Represents an object to hold a connection to the database. 
@@ -117,7 +119,7 @@ class DbConnection {
 
     public boolean isValidOrg(int id) {
         try {
-            PreparedStatement stmt = this.Conn.prepareStatement("SELECT * FROM `organization` WHERE org_code = " + id);
+            PreparedStatement stmt = this.Conn.prepareStatement("SELECT * FROM `organization` WHERE org_id = " + id);
             ResultSet res = stmt.executeQuery();
             return res.next();
         }
@@ -510,5 +512,190 @@ class DbConnection {
 
         // A default return
         return "Something went wrong...";
+    }
+
+    /**
+     * Checks whether an organization is eligible to reserve a lab at the specified date and time.
+     *
+     * Rules enforced:
+     * - Reservation must be made at least 72 hours before the scheduled start time
+     * - End time must be later than start time
+     * - Laboratory must not already be reserved during the specified timeslot
+     *
+     * @param org_id the organization ID
+     * @param lab_code the lab to be reserved
+     * @param reservation_date the date of reservation (YYYY-MM-DD)
+     * @param start_time the start time (HH:MM:SS)
+     * @param end_time the end time (HH:MM:SS)
+     *
+     * @return true if the organization can reserve the lab, false otherwise
+     */
+    public boolean orgCanReserve(int org_id, int lab_code, String reservation_date, String start_time, String end_time) {
+        try {
+            // Validate organization and laboratory IDs
+            if (!this.isValidOrg(org_id) || !this.isValidLaboratory(lab_code))
+                return false;
+
+            // Parse reservation start and end times
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime reservationStart = LocalDateTime.parse(reservation_date + "T" + start_time);
+            LocalDateTime reservationEnd = LocalDateTime.parse(reservation_date + "T" + end_time);
+
+            // Rule: Reservation must be made at least 72 hours in advance
+            if (Duration.between(now, reservationStart).toHours() < 72)
+                return false;
+
+            // Rule: End time must be later than start time
+            if (!reservationStart.isBefore(reservationEnd))
+                return false;
+
+            // Rule: No overlapping reservations in the same lab
+            String conflictQuery = """
+                SELECT * FROM lab_reservation_log
+                WHERE laboratory_id = %d AND reservation_date = '%s'
+                AND (
+                    (start_time <= '%s' AND end_time > '%s') OR
+                    (start_time < '%s' AND end_time >= '%s') OR
+                    (start_time >= '%s' AND end_time <= '%s')
+                ) AND status = 'reserved'
+                """.formatted(lab_code, reservation_date, start_time, start_time, end_time, end_time, start_time, end_time);
+
+            PreparedStatement stmt = this.Conn.prepareStatement(conflictQuery);
+            ResultSet res = stmt.executeQuery();
+            return !res.next(); // true if no conflict
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    /**
+     * Implementation of the reserve laboratory transaction.
+     *
+     * @param org_id the ID of the requesting organization
+     * @param lab_code the code of the laboratory to be reserved
+     * @param lab_tech_id the ID of the lab technician processing the reservation
+     * @param reservation_date the date of the reservation (format: YYYY-MM-DD)
+     * @param start_time the start time of the reservation (format: HH:MM:SS)
+     * @param end_time the end time of the reservation (format: HH:MM:SS)
+     * @param remarks optional remarks or purpose for the reservation
+     * 
+     * @return a confirmation message if successful, or an error message if the reservation fails
+     */
+    public String reserveLab(int org_id, int lab_code, int lab_tech_id, String reservation_date, String start_time, String end_time, String remarks) {
+        try {
+            // Step 1: Check reservation eligibility using orgCanReserve
+            if (!orgCanReserve(org_id, lab_code, reservation_date, start_time, end_time))
+                return "Operation failed! Organization is not eligible to reserve the lab at the specified time.";
+
+            // Step 2: Record the reservation transaction
+            String reserveQuery = """
+                INSERT INTO lab_reservation_log
+                (organization_id, laboratory_id, labtech_id, transaction, reservation_date, start_time, end_time, remarks, status)
+                VALUES (%d, %d, %d, NOW(), '%s', '%s', '%s', "%s", 'reserved')
+                """.formatted(org_id, lab_code, lab_tech_id, reservation_date, start_time, end_time, remarks);
+
+            PreparedStatement reserveStmt = this.Conn.prepareStatement(reserveQuery);
+            int affected = reserveStmt.executeUpdate();
+
+            // Step 3: Retrieve the reservation ID for confirmation
+            String getRIDQuery = """
+                SELECT reservation_id FROM lab_reservation_log
+                ORDER BY transaction DESC, reservation_id DESC
+                """;
+            ResultSet RIDres = this.Conn.prepareStatement(getRIDQuery).executeQuery();
+            RIDres.next();
+            int reservationID = RIDres.getInt("reservation_id");
+
+            return "Reservation completed! (Reservation ID: %d) (%d rows affected)".formatted(reservationID, affected);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return "Something went wrong... please try again.";
+    }
+
+    /**
+     * Implementation of the reserve laboratory transaction with no remarks.
+     *
+     * @param org_id the organization ID
+     * @param lab_code the laboratory code
+     * @param lab_tech_id the attending lab technician's ID
+     * @param reservation_date the date of the reservation (format: YYYY-MM-DD)
+     * @param start_time the start time of the reservation (format: HH:MM:SS)
+     * @param end_time the end time of the reservation (format: HH:MM:SS)
+     *
+     * @return a confirmation message if successful, or an error message if the reservation fails
+     */
+    public String reserveLab(int org_id, int lab_code, int lab_tech_id, String reservation_date, String start_time, String end_time) {
+        return reserveLab(org_id, lab_code, lab_tech_id, reservation_date, start_time, end_time, "");
+    }
+
+    /**
+     * Implementation of the cancel laboratory reservation transaction.
+     *
+     * @param reservation_id the ID of the reservation to cancel
+     * @param lab_tech_id the ID of the lab technician processing the cancellation
+     * @param remarks optional remarks explaining the reason for cancellation
+     * 
+     * @return a confirmation message if successful, or an error message if the cancellation fails
+     */
+    public String cancelLabReservation(int reservation_id, int lab_tech_id, String remarks) {
+        try {
+            // Step 1: Retrieve reservation details
+            String checkQuery = """
+                SELECT reservation_date, start_time, end_time FROM lab_reservation_log
+                WHERE reservation_id = %d AND status = 'reserved'
+                """.formatted(reservation_id);
+            PreparedStatement checkStmt = this.Conn.prepareStatement(checkQuery);
+            ResultSet res = checkStmt.executeQuery();
+
+            if (!res.next())
+                return "Operation failed! No active reservation found with the given ID.";
+
+            // Step 2: Parse reservation timing
+            String date = res.getString("reservation_date");
+            String start = res.getString("start_time");
+            String end = res.getString("end_time");
+
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime startTime = LocalDateTime.parse(date + "T" + start);
+            LocalDateTime endTime = LocalDateTime.parse(date + "T" + end);
+
+            // Step 3: Enforce cancellation rules
+            if (!now.isBefore(startTime))
+                return "Operation failed! Cannot cancel during the reserved timeslot.";
+
+            if (Duration.between(now, startTime).toHours() < 24)
+                return "Operation failed! Cancellations must be made at least 24 hours in advance.";
+
+            // Step 4: Record the cancellation
+            String cancelQuery = """
+                UPDATE lab_reservation_log
+                SET status = 'cancelled', remarks = CONCAT(remarks, " | Cancelled: %s")
+                WHERE reservation_id = %d
+                """.formatted(remarks, reservation_id);
+            PreparedStatement cancelStmt = this.Conn.prepareStatement(cancelQuery);
+            int affected = cancelStmt.executeUpdate();
+
+            return "Cancellation completed! (%d rows affected)".formatted(affected);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return "Something went wrong... please try again.";
+    }
+
+    /**
+     * Implementation of the cancel laboratory reservation transaction with no remarks.
+     *
+     * @param reservation_id the reservation ID to cancel
+     * @param lab_tech_id the attending lab technician's ID
+     *
+     * @return a confirmation message if successful, or an error message if the cancellation fails
+     */
+    public String cancelLabReservation(int reservation_id, int lab_tech_id) {
+        return cancelLabReservation(reservation_id, lab_tech_id, "");
     }
 }

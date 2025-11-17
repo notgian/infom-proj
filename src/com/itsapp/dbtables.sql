@@ -98,7 +98,6 @@ CREATE TABLE IF NOT EXISTS `lab_reservation_log` ( -- unlike the equipment borro
     remarks VARCHAR(100),
     status VARCHAR(10) -- 'reserved, cancelled'
 
-    CHECK ( TIMEDIFF(end_time, start_time) >= 1), -- start and end time are not the same
     CHECK (status IN ('reserved', 'cancelled') ),
     PRIMARY KEY (reservation_id),
     FOREIGN KEY (organization_id) REFERENCES organization (org_id),
