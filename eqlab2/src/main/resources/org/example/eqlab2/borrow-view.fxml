@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.example.eqlab2.BorrowController"
+      alignment="CENTER"
+      spacing="20"
+      prefWidth="400" prefHeight="650"
+      style="-fx-padding: 30; -fx-background-color: #f4f5fc;">
+
+    <Label text="Borrow Equipment"
+           style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+
+    <Label text="(This page is empty for now)"
+           style="-fx-font-size: 14px; -fx-text-fill: #777;" />
+
+    <Button text="Back"
+            onAction="#goBack"
+            prefWidth="200"
+            style="-fx-background-color: #bdbdbd; -fx-background-radius: 15;" />
+</VBox>

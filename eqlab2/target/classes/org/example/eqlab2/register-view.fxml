@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.example.eqlab2.EqlabController"
+      alignment="CENTER" spacing="12"
+      prefWidth="400" prefHeight="600"
+      style="-fx-padding: 20;">
+
+    <Label text="REGISTER" style="-fx-font-size: 28px; -fx-font-weight: bold;" />
+
+    <TextField fx:id="regUserField"
+               promptText="Username"
+               prefWidth="250"/>
+
+    <PasswordField fx:id="regPassField"
+                   promptText="Password"
+                   prefWidth="250"/>
+
+    <PasswordField fx:id="regConfirmField"
+                   promptText="Confirm Password"
+                   prefWidth="250"/>
+
+    <!-- Yeah so no db so idk what to do with the registration -->
+    <Button text="Register"
+            prefWidth="200"
+            onAction="#handleRegister"/>
+
+    <Button text="Back"
+            prefWidth="200"
+            onAction="#goBackToHome"/>
+
+</VBox>
