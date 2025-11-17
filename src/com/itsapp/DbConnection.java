@@ -182,8 +182,6 @@ class DbConnection {
         return false;
     }
 
-
-
     /**
      * Implementation of the borrow equipment transaction.
      *
@@ -219,7 +217,7 @@ class DbConnection {
             availResA.next();
 
             if (availResA.getString("status") == "broken")
-                return "Operation failed! The specified equipment is broken and cannot be borrowed at the moment";
+                return "Operation failed! The specified equipment is broken and cannot be borrowed at the moment.";
 
             // Checking if equipment is in use
             String availabilityQueryB = """
@@ -244,7 +242,6 @@ class DbConnection {
                     (student_id, equipment_id, labtech_id, transaction_date, remarks, status) VALUES
                     (%d, %d, %d, CURRENT_DATE(), \"%s\", 'borrowed');
                 """.formatted(student_id, equipment_code, lab_tech_id, remarks);
-            System.out.println(borrowUpdateQuery);
             PreparedStatement brwUpdStmt = this.Conn.prepareStatement(borrowUpdateQuery);
             int affected = brwUpdStmt.executeUpdate();
 
@@ -266,7 +263,7 @@ class DbConnection {
         } 
         
         // A default return message
-        return "Something went wrong...";
+        return "Something went wrong... please try again.";
     }
 
     /**
@@ -281,5 +278,116 @@ class DbConnection {
      */
     public String borrowEquipment(int student_id, int equipment_code, int lab_tech_id) {
         return borrowEquipment(student_id, equipment_code, lab_tech_id, "");
+    }
+
+    public boolean studentCanReturn(int id) {
+        try {
+            // checking borrow log for eligibility
+        }
+
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    /**
+     *
+     *
+     *
+     */
+    public String returnEquipment(int student_id, int equipment_code, int lab_tech_id, String remarks, boolean broken) {
+        // Viewing the student record to verify that they are a student enrolled in the system.
+        // Viewing the Equipment Borrowing Log to verify that the student had borrowed equipment previously
+        // Checking equipment to ensure no damage was done.
+        // If damage was done to the equipment:
+            // Updating the equipment record to update the status to be “Unavailable.”
+        // If no damage as done to the equipment:
+            // Viewing the record of the equipment to verify the equipment being returned. 
+            // Updating the corresponding entry in the equipment record to reflect its availability.
+            // Updating the borrow log to reflect that the student is no longer borrowing the equipment.
+            // Recording the lab technician who processed the return of equipment.
+            // Recording the transaction into the Equipment Return Log.
+
+        try {
+            if (!this.isValidStudent(student_id))
+                return "Operation failed! Given student_id is not a valid student.";
+
+            if (!this.isValidEquipment(equipment_code))
+                return "Operation failed! The given equipment code does not correspond to a valid piece of equipment.";
+
+            // Checking if student can return an equipment 
+            String queryA = """
+                SELECT * FROM `equipment_transaction_log` 
+                    WHERE student_id = %d
+                    ORDER BY transaction_date DESC 
+                    LIMIT 1;
+                """.formatted(student_id);
+    
+            PreparedStatement stmtA = this.Conn.prepareStatement(queryA);
+            ResultSet resA = stmtA.executeQuery();
+            Boolean canReturn = null;
+            // if student has no previous transactions: they cannot return anything!
+            if (!resA.next())
+                canReturn = false;
+            if (canReturn == null) {
+                String brwStatus = resA.getString("status");
+                if (brwStatus.equals("borrowed"))
+                    canReturn = true;
+                else    
+                    canReturn = false;
+            }
+            else
+                canReturn = false;
+
+            
+            if (!this.studentCanReturn(student_id))
+                return "Operation failed! Given student does not have the specified equipment to return.";
+            
+            // Actual 'returning' part of the operation
+            String returnStatus = "returned";
+            if (broken) {
+                returnStatus = "broken";
+
+                String brokenStmntStr = """ 
+                        UPDATE `equipment` SET status = "broken" 
+                            WHERE equipment_code = %d
+                    """.formatted(equipment_code);
+                PreparedStatement brokenStmt = this.Conn.prepareStatement(brokenStmntStr);
+                brokenStmt.executeUpdate();
+
+                // Update equipment record -> broken
+                // Update equipment_transaction_log -> broken
+            } 
+
+            String returnUpdateQuery = """ 
+                INSERT INTO `equipment_transaction_log` 
+                    (student_id, equipment_id, labtech_id, transaction_date, remarks, status) VALUES
+                    (%d, %d, %d, CURRENT_DATE(), "%s", "%s");
+                """.formatted(student_id, equipment_code, lab_tech_id, remarks, returnStatus);
+            PreparedStatement rtrnUpdStmt = this.Conn.prepareStatement(returnUpdateQuery);
+            int affected = rtrnUpdStmt.executeUpdate();
+            String getTIDQuery = """ 
+                SELECT transaction_id FROM equipment_transaction_log
+                    ORDER BY transaction_date DESC
+                    LIMIT 1
+                """; 
+            ResultSet TIDres = this.Conn.prepareStatement(getTIDQuery)
+                .executeQuery();
+            TIDres.next();
+            int transactionID = TIDres.getInt("transaction_id");
+
+            if (broken)
+                return "Equipment has been marked as broken! The Student now cannot borrow until equipment has been replaced. (Transaction ID: %d)".formatted(transactionID);
+            // Get the transaction_id to display
+            return "Return operation completed! (Transaction ID: %d) (%d rows affected)".formatted(transactionID, affected);
+            
+        }
+
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "Something went wrong... please try again.";
     }
 }
