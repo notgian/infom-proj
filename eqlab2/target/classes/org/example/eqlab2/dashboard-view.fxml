@@ -30,6 +30,14 @@
                    -fx-font-size: 18;
                    -fx-font-weight: bold;" />
 
+     <Button text="Return Lab Equipment"
+            onAction="#goToReturn"
+            prefWidth="260" prefHeight="55"
+            style="-fx-background-color: #ce93d8;
+                   -fx-background-radius: 20;
+                   -fx-font-size: 18;
+                   -fx-font-weight: bold;" />  
+
     <Button text="Logout"
             onAction="#logout"
             prefWidth="200" prefHeight="40"

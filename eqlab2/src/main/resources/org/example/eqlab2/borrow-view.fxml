@@ -2,23 +2,57 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.example.eqlab2.BorrowController"
-      alignment="CENTER"
-      spacing="20"
-      prefWidth="400" prefHeight="650"
-      style="-fx-padding: 30; -fx-background-color: #f4f5fc;">
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.eqlab2.BorrowController"
+            prefWidth="400" prefHeight="650"
+            style="-fx-background-color: #e8eefc;">
 
-    <Label text="Borrow Equipment"
-           style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+    <VBox alignment="TOP_CENTER" spacing="20"
+          layoutX="20" layoutY="20"
+          prefWidth="360"
+          style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 20;">
 
-    <Label text="(This page is empty for now)"
-           style="-fx-font-size: 14px; -fx-text-fill: #777;" />
+        <!-- Title -->
+        <Label text="BORROW EQUIPMENT"
+               style="-fx-font-size: 24px; -fx-font-weight: bold;" />
 
-    <Button text="Back"
-            onAction="#goBack"
-            prefWidth="200"
-            style="-fx-background-color: #bdbdbd; -fx-background-radius: 15;" />
-</VBox>
+        <Label text="Borrow an item from the laboratory"
+               style="-fx-font-size: 14px; -fx-text-fill: #555;" />
+
+        <!-- Select Date -->
+        <Label text="Select Date:"
+               style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+        <DatePicker fx:id="borrowDate" prefWidth="250"/>
+
+        <!-- Equipment Dropdown -->
+        <Label text="Select Equipment:"
+               style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+        <ComboBox fx:id="equipmentDropdown" prefWidth="250"
+                  promptText="Choose equipment" />
+
+        <!-- Select Time -->
+        <Label text="Select Time:"
+               style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+
+        <HBox spacing="15" alignment="CENTER">
+            <ComboBox fx:id="startTime" promptText="Start" prefWidth="110"/>
+            <ComboBox fx:id="endTime" promptText="End" prefWidth="110"/>
+        </HBox>
+
+        <!-- Reserve Button -->
+        <Button text="BORROW"
+                onAction="#submitBorrowRequest"
+                prefWidth="250"
+                style="-fx-background-color: #89c4ff; -fx-background-radius: 30; -fx-font-size: 16px; -fx-font-weight: bold;" />
+
+        <!-- Back -->
+        <Button text="Back"
+                onAction="#goBack"
+                prefWidth="200"
+                style="-fx-background-color: #bdbdbd; -fx-background-radius: 15;" />
+    </VBox>
+
+</AnchorPane>
