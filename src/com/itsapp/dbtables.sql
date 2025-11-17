@@ -69,11 +69,11 @@ CREATE TABLE IF NOT EXISTS `laboratory` (
 
 -- For recording equipment-related transactions
 CREATE TABLE IF NOT EXISTS `equipment_transaction_log` (
-    transaction_id INTEGER(8) NOT NULL ,
+    transaction_id INTEGER(8) NOT NULL AUTO INCREMENT,
     student_id INTEGER, -- SET FK
     equipment_id INTEGER, -- SET KN
     labtech_id INTEGER, -- SET FK
-    transaction_date DATE, -- date of transaction
+    transaction_date DATETIME, -- date of transaction
     remarks VARCHAR(100),
     status VARCHAR(8), -- borrowed, broken, returned, replaced
 
@@ -84,13 +84,14 @@ CREATE TABLE IF NOT EXISTS `equipment_transaction_log` (
     FOREIGN KEY (labtech_id) REFERENCES lab_technician (lab_tech_id)
 );
 
+ALTER TABLE `equipment_transaction_log` AUTO_INCREMENT=10000000;
 
 CREATE TABLE IF NOT EXISTS `lab_reservation_log` ( -- unlike the equipment borrow/return log will have reservations listed here. Cancelled reserations will be flagged as such
-    reservation_id INTEGER(8) NOT NULL,
+    reservation_id INTEGER(8) NOT NULL AUTO INCREMENT,
     organization_id INTEGER(8), -- SET FK
     laboratory_id INTEGER(8), -- SET FK
     labtech_id INTEGER(8), -- SET FK
-    transaction DATE,
+    transaction DATETIME,
     reservation_date DATE,
     start_time TIME,
     end_time TIME,
@@ -105,6 +106,7 @@ CREATE TABLE IF NOT EXISTS `lab_reservation_log` ( -- unlike the equipment borro
     FOREIGN KEY (labtech_id) REFERENCES lab_technician (lab_tech_id)
 );
 
+ALTER TABLE `lab_reservation_log` AUTO_INCREMENT=10000000;
 /* SECONDARY ENTITIES */
 
 CREATE TABLE IF NOT EXISTS `lab_class_schedule` (
@@ -247,69 +249,69 @@ INSERT INTO `laboratory` (lab_code, lab_location, description, capacity) VALUES
 
 /* TRANSACTION & SECONDARY ENTITIES (30 Records Each) */
 
-INSERT INTO `equipment_transaction_log` (transaction_id, student_id, equipment_id, labtech_id, transaction_date, remarks, status) VALUES
-(50000001, 12010001, 10100100, 10001001, '2025-10-01', 'Borrowed for thesis', 'borrowed'),
-(50000002, 12010002, 10100500, 10001002, '2025-10-01', 'Class presentation', 'borrowed'),
-(50000003, 12010002, 10100500, 10001002, '2025-10-01', 'Returned OK', 'returned'),
-(50000004, 12010003, 10200200, 10001003, '2025-10-02', 'Robotics project', 'borrowed'),
-(50000005, 12110001, 10200100, 10001001, '2025-10-03', 'IoT project', 'borrowed'),
-(50000006, 12010001, 10100100, 10001001, '2025-10-04', 'Returned, slight wear', 'returned'),
-(50000007, 12110002, 10200400, 10002001, '2025-10-05', 'VR Dev', 'borrowed'),
-(50000008, 12110003, 10200300, 10002002, '2025-10-05', 'Student reported flickering', 'broken'),
-(50000009, 12110004, 10200500, 10001001, '2025-10-06', 'Need for networking lab', 'borrowed'),
-(50000010, 12010003, 10200200, 10001003, '2025-10-07', 'Student bought replacement', 'replaced'),
-(50000011, 12210001, 10400100, 10003001, '2025-10-08', 'Hardware class', 'borrowed'),
-(50000012, 12210001, 10400100, 10003001, '2025-10-08', 'Returned same day', 'returned'),
-(50000013, 12210002, 10100300, 10003002, '2025-10-09', 'Keyboard stopped working', 'broken'),
-(50000014, 12210003, 10400400, 10003003, '2025-10-10', 'Multimedia project', 'borrowed'),
-(50000015, 12210004, 10100400, 10004001, '2025-10-11', 'Mouse sticky', 'borrowed'),
-(50000016, 12210004, 10100400, 10004001, '2025-10-11', 'Cleaned and returned', 'returned'),
-(50000017, 12310001, 10200200, 10004002, '2025-10-12', 'BSEE Project', 'borrowed'),
-(50000018, 12310002, 10300500, 10004003, '2025-10-13', 'Capstone project server', 'borrowed'),
-(50000019, 12310003, 10100100, 10005001, '2025-10-14', 'Lab 101 PC 5', 'borrowed'),
-(50000020, 12310004, 10100200, 10005002, '2025-10-15', 'Presentation practice', 'borrowed'),
-(50000021, 12310004, 10100200, 10005002, '2025-10-15', 'Returned projector', 'returned'),
-(50000022, 12410001, 10400100, 10005003, '2025-10-16', 'Borrowing breadboard', 'borrowed'),
-(50000023, 12410002, 10400200, 10006001, '2025-10-17', 'Jumper wires', 'borrowed'),
-(50000024, 12510001, 10400300, 10006002, '2025-10-18', 'External monitor for laptop', 'borrowed'),
-(50000025, 12510002, 10200400, 10006003, '2025-10-19', 'VR Dev club trial', 'borrowed'),
-(50000026, 12410001, 10400100, 10005003, '2025-10-19', 'Returned breadboard', 'returned'),
-(50000027, 12510002, 10200400, 10006003, '2025-10-19', 'VR returned', 'returned'),
-(50000028, 12510001, 10400300, 10006002, '2025-10-20', 'Monitor returned', 'returned'),
-(50000029, 12310002, 10300500, 10004003, '2025-10-21', 'Capstone server returned', 'returned'),
-(50000030, 12110002, 10200400, 10002001, '2025-10-22', 'VR Dev returned', 'returned');
+INSERT INTO `equipment_transaction_log` (student_id, equipment_id, labtech_id, transaction_date, remarks, status) VALUES
+(12010001, 10100100, 10001001, '2025-10-01', 'Borrowed for thesis', 'borrowed'),
+(12010002, 10100500, 10001002, '2025-10-01', 'Class presentation', 'borrowed'),
+(12010002, 10100500, 10001002, '2025-10-01', 'Returned OK', 'returned'),
+(12010003, 10200200, 10001003, '2025-10-02', 'Robotics project', 'borrowed'),
+(12110001, 10200100, 10001001, '2025-10-03', 'IoT project', 'borrowed'),
+(12010001, 10100100, 10001001, '2025-10-04', 'Returned, slight wear', 'returned'),
+(12110002, 10200400, 10002001, '2025-10-05', 'VR Dev', 'borrowed'),
+(12110003, 10200300, 10002002, '2025-10-05', 'Student reported flickering', 'broken'),
+(12110004, 10200500, 10001001, '2025-10-06', 'Need for networking lab', 'borrowed'),
+(12010003, 10200200, 10001003, '2025-10-07', 'Student bought replacement', 'replaced'),
+(12210001, 10400100, 10003001, '2025-10-08', 'Hardware class', 'borrowed'),
+(12210001, 10400100, 10003001, '2025-10-08', 'Returned same day', 'returned'),
+(12210002, 10100300, 10003002, '2025-10-09', 'Keyboard stopped working', 'broken'),
+(12210003, 10400400, 10003003, '2025-10-10', 'Multimedia project', 'borrowed'),
+(12210004, 10100400, 10004001, '2025-10-11', 'Mouse sticky', 'borrowed'),
+(12210004, 10100400, 10004001, '2025-10-11', 'Cleaned and returned', 'returned'),
+(12310001, 10200200, 10004002, '2025-10-12', 'BSEE Project', 'borrowed'),
+(12310002, 10300500, 10004003, '2025-10-13', 'Capstone project server', 'borrowed'),
+(12310003, 10100100, 10005001, '2025-10-14', 'Lab 101 PC 5', 'borrowed'),
+(12310004, 10100200, 10005002, '2025-10-15', 'Presentation practice', 'borrowed'),
+(12310004, 10100200, 10005002, '2025-10-15', 'Returned projector', 'returned'),
+(12410001, 10400100, 10005003, '2025-10-16', 'Borrowing breadboard', 'borrowed'),
+(12410002, 10400200, 10006001, '2025-10-17', 'Jumper wires', 'borrowed'),
+(12510001, 10400300, 10006002, '2025-10-18', 'External monitor for laptop', 'borrowed'),
+(12510002, 10200400, 10006003, '2025-10-19', 'VR Dev club trial', 'borrowed'),
+(12410001, 10400100, 10005003, '2025-10-19', 'Returned breadboard', 'returned'),
+(12510002, 10200400, 10006003, '2025-10-19', 'VR returned', 'returned'),
+(12510001, 10400300, 10006002, '2025-10-20', 'Monitor returned', 'returned'),
+(12310002, 10300500, 10004003, '2025-10-21', 'Capstone server returned', 'returned'),
+(12110002, 10200400, 10002001, '2025-10-22', 'VR Dev returned', 'returned');
 
-INSERT INTO `lab_reservation_log` (reservation_id, organization_id, laboratory_id, labtech_id, transaction, reservation_date, start_time, end_time, remarks, status) VALUES
-(60000001, 30000001, 40000001, 10001001, '2025-10-10', '2025-11-15', '09:00:00', '12:00:00', 'CompSoc General Assembly', 'reserved'),
-(60000002, 30000003, 40000003, 10001002, '2025-10-11', '2025-11-16', '13:00:00', '17:00:00', 'Coders Club Hackathon', 'reserved'),
-(60000003, 30000002, 40000002, 10001003, '2025-10-12', '2025-11-17', '10:00:00', '14:00:00', 'IEEE Networking Workshop', 'reserved'),
-(60000004, 30000004, 40000003, 10001001, '2025-10-13', '2025-11-18', '09:00:00', '17:00:00', 'GameDev Guild Game Jam', 'reserved'),
-(60000005, 30000001, 40000001, 10001002, '2025-10-14', '2025-11-20', '13:00:00', '15:00:00', 'Meeting - Cancelled', 'cancelled'),
-(60000006, 30000005, 40000012, 10002001, '2025-10-15', '2025-11-21', '09:00:00', '12:00:00', 'Data Science PH Talk', 'reserved'),
-(60000007, 30000006, 40000009, 10002002, '2025-10-15', '2025-11-22', '10:00:00', '15:00:00', 'CyberSec CTF Event', 'reserved'),
-(60000008, 30000007, 40000005, 10002003, '2025-10-16', '2025-11-23', '13:00:00', '16:00:00', 'AI Society Python Workshop', 'reserved'),
-(60000009, 30000009, 40000005, 10003001, '2025-10-17', '2025-11-24', '14:00:00', '17:00:00', 'Robotics Org Meeting', 'reserved'),
-(60000010, 30000010, 40000008, 10003002, '2025-10-18', '2025-11-25', '09:00:00', '11:00:00', 'Web Weavers React Intro', 'reserved'),
-(60000011, 30000011, 40000003, 10003003, '2025-10-19', '2025-11-26', '10:00:00', '12:00:00', 'UX Society Figma Workshop', 'reserved'),
-(60000012, 30000012, 40000008, 10004001, '2025-10-20', '2025-11-27', '13:00:00', '16:00:00', 'Mobile Dev Flutter Talk', 'reserved'),
-(60000013, 30000013, 40000006, 10004002, '2025-10-20', '2025-11-28', '10:00:00', '17:00:00', 'Hardware Hackers Soldering', 'reserved'),
-(60000014, 30000014, 40000001, 10004003, '2025-10-21', '2025-11-29', '09:00:00', '17:00:00', 'E-Sports Tournament', 'reserved'),
-(60000015, 30000016, 40000007, 10005001, '2025-10-22', '2025-11-30', '13:00:00', '15:00:00', 'WICS Mentorship Event', 'reserved'),
-(60000016, 30000001, 40000001, 10001001, '2025-10-23', '2025-12-01', '10:00:00', '12:00:00', 'CompSoc Officers Meeting', 'reserved'),
-(60000017, 30000002, 40000002, 10001003, '2025-10-23', '2025-12-01', '14:00:00', '16:00:00', 'IEEE Committee Meeting', 'reserved'),
-(60000018, 30000003, 40000003, 10001002, '2025-10-24', '2025-12-02', '10:00:00', '12:00:00', 'Coders Club Planning', 'reserved'),
-(60000019, 30000004, 40000003, 10001001, '2025-10-24', '2025-12-02', '13:00:00', '15:00:00', 'GameDev Meeting', 'reserved'),
-(60000020, 30000005, 40000012, 10002001, '2025-10-25', '2025-12-03', '10:00:00', '13:00:00', 'Data Sci Project Pitch', 'reserved'),
-(60000021, 30000006, 40000009, 10002002, '2025-10-25', '2025-12-03', '14:00:00', '16:00:00', 'CyberSec Workshop Prep', 'reserved'),
-(60000022, 30000007, 40000005, 10002003, '2025-10-26', '2025-12-04', '10:00:00', '12:00:00', 'AI Society Project Demo', 'reserved'),
-(60000023, 30000009, 40000005, 10003001, '2025-10-26', '2025-12-04', '13:00:00', '15:00:00', 'Robotics Org Build Session', 'reserved'),
-(60000024, 30000010, 40000008, 10003002, '2025-10-27', '2025-12-05', '09:00:00', '12:00:00', 'Web Weavers Showcase', 'reserved'),
-(60000025, 30000011, 40000003, 10003003, '2025-10-27', '2025-12-05', '14:00:00', '17:00:00', 'UX Society Critiquing', 'reserved'),
-(60000026, 30000012, 40000008, 10004001, '2025-10-28', '2025-12-06', '10:00:00', '14:00:00', 'Mobile Dev App Demo', 'reserved'),
-(60000027, 30000013, 40000006, 10004002, '2025-10-28', '2025-12-06', '13:00:00', '17:00:00', 'Hardware Hackers Open Lab', 'reserved'),
-(60000028, 30000014, 40000001, 10004003, '2025-10-29', '2025-12-07', '09:00:00', '17:00:00', 'E-Sports Finals', 'reserved'),
-(60000029, 30000016, 40000007, 10005001, '2025-10-30', '2025-12-08', '13:00:00', '16:00:00', 'WICS Alumnae Talk', 'reserved'),
-(60000030, 30000017, 40000004, 10005002, '2025-10-31', '2025-12-09', '10:00:00', '12:00:00', 'InfoSys Society Meeting', 'cancelled');
+INSERT INTO `lab_reservation_log` (organization_id, laboratory_id, labtech_id, transaction, reservation_date, start_time, end_time, remarks, status) VALUES
+(30000001, 40000001, 10001001, '2025-10-10', '2025-11-15', '09:00:00', '12:00:00', 'CompSoc General Assembly', 'reserved'),
+(30000003, 40000003, 10001002, '2025-10-11', '2025-11-16', '13:00:00', '17:00:00', 'Coders Club Hackathon', 'reserved'),
+(30000002, 40000002, 10001003, '2025-10-12', '2025-11-17', '10:00:00', '14:00:00', 'IEEE Networking Workshop', 'reserved'),
+(30000004, 40000003, 10001001, '2025-10-13', '2025-11-18', '09:00:00', '17:00:00', 'GameDev Guild Game Jam', 'reserved'),
+(30000001, 40000001, 10001002, '2025-10-14', '2025-11-20', '13:00:00', '15:00:00', 'Meeting - Cancelled', 'cancelled'),
+(30000005, 40000012, 10002001, '2025-10-15', '2025-11-21', '09:00:00', '12:00:00', 'Data Science PH Talk', 'reserved'),
+(30000006, 40000009, 10002002, '2025-10-15', '2025-11-22', '10:00:00', '15:00:00', 'CyberSec CTF Event', 'reserved'),
+(30000007, 40000005, 10002003, '2025-10-16', '2025-11-23', '13:00:00', '16:00:00', 'AI Society Python Workshop', 'reserved'),
+(30000009, 40000005, 10003001, '2025-10-17', '2025-11-24', '14:00:00', '17:00:00', 'Robotics Org Meeting', 'reserved'),
+(30000010, 40000008, 10003002, '2025-10-18', '2025-11-25', '09:00:00', '11:00:00', 'Web Weavers React Intro', 'reserved'),
+(30000011, 40000003, 10003003, '2025-10-19', '2025-11-26', '10:00:00', '12:00:00', 'UX Society Figma Workshop', 'reserved'),
+(30000012, 40000008, 10004001, '2025-10-20', '2025-11-27', '13:00:00', '16:00:00', 'Mobile Dev Flutter Talk', 'reserved'),
+(30000013, 40000006, 10004002, '2025-10-20', '2025-11-28', '10:00:00', '17:00:00', 'Hardware Hackers Soldering', 'reserved'),
+(30000014, 40000001, 10004003, '2025-10-21', '2025-11-29', '09:00:00', '17:00:00', 'E-Sports Tournament', 'reserved'),
+(30000016, 40000007, 10005001, '2025-10-22', '2025-11-30', '13:00:00', '15:00:00', 'WICS Mentorship Event', 'reserved'),
+(30000001, 40000001, 10001001, '2025-10-23', '2025-12-01', '10:00:00', '12:00:00', 'CompSoc Officers Meeting', 'reserved'),
+(30000002, 40000002, 10001003, '2025-10-23', '2025-12-01', '14:00:00', '16:00:00', 'IEEE Committee Meeting', 'reserved'),
+(30000003, 40000003, 10001002, '2025-10-24', '2025-12-02', '10:00:00', '12:00:00', 'Coders Club Planning', 'reserved'),
+(30000004, 40000003, 10001001, '2025-10-24', '2025-12-02', '13:00:00', '15:00:00', 'GameDev Meeting', 'reserved'),
+(30000005, 40000012, 10002001, '2025-10-25', '2025-12-03', '10:00:00', '13:00:00', 'Data Sci Project Pitch', 'reserved'),
+(30000006, 40000009, 10002002, '2025-10-25', '2025-12-03', '14:00:00', '16:00:00', 'CyberSec Workshop Prep', 'reserved'),
+(30000007, 40000005, 10002003, '2025-10-26', '2025-12-04', '10:00:00', '12:00:00', 'AI Society Project Demo', 'reserved'),
+(30000009, 40000005, 10003001, '2025-10-26', '2025-12-04', '13:00:00', '15:00:00', 'Robotics Org Build Session', 'reserved'),
+(30000010, 40000008, 10003002, '2025-10-27', '2025-12-05', '09:00:00', '12:00:00', 'Web Weavers Showcase', 'reserved'),
+(30000011, 40000003, 10003003, '2025-10-27', '2025-12-05', '14:00:00', '17:00:00', 'UX Society Critiquing', 'reserved'),
+(30000012, 40000008, 10004001, '2025-10-28', '2025-12-06', '10:00:00', '14:00:00', 'Mobile Dev App Demo', 'reserved'),
+(30000013, 40000006, 10004002, '2025-10-28', '2025-12-06', '13:00:00', '17:00:00', 'Hardware Hackers Open Lab', 'reserved'),
+(30000014, 40000001, 10004003, '2025-10-29', '2025-12-07', '09:00:00', '17:00:00', 'E-Sports Finals', 'reserved'),
+(30000016, 40000007, 10005001, '2025-10-30', '2025-12-08', '13:00:00', '16:00:00', 'WICS Alumnae Talk', 'reserved'),
+(30000017, 40000004, 10005002, '2025-10-31', '2025-12-09', '10:00:00', '12:00:00', 'InfoSys Society Meeting', 'cancelled');
 
 INSERT INTO `lab_class_schedule` (laboratory_id, start_time, end_time, day) VALUES
 (40000001, '08:00:00', '11:00:00', 'M'),

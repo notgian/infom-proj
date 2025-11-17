@@ -161,7 +161,6 @@ class DbConnection {
                 SELECT * FROM `equipment_transaction_log` 
                     WHERE student_id = %d
                     ORDER BY transaction_date DESC 
-                    LIMIT 1;
                 """.formatted(id);
     
             PreparedStatement stmtB = this.Conn.prepareStatement(queryB);
@@ -203,8 +202,45 @@ class DbConnection {
 
             if (!this.isValidEquipment(equipment_code))
                 return "Operation failed! The given equipment code does not correspond to a valid piece of equipment.";
+            
+            // Checking student borrowing eligibility
 
-            if (!this.studentCanBorrow(student_id))
+            Boolean canBorrow = null;
+            String queryA = """
+                SELECT * FROM `student` WHERE student_id = %d;
+                """.formatted(student_id);
+            PreparedStatement stmtA = this.Conn.prepareStatement(queryA.strip());
+            ResultSet resA = stmtA.executeQuery();
+            resA.next();
+            if (resA.getString("enrollment_status").equals("not enrolled"))
+                canBorrow = false;
+
+            String queryB = """
+                SELECT * FROM `equipment_transaction_log` 
+                    WHERE student_id = %d
+                    ORDER BY transaction_date DESC 
+                """.formatted(student_id);
+            PreparedStatement stmtB = this.Conn.prepareStatement(queryB);
+            ResultSet resB = stmtB.executeQuery();
+
+            // checking borrow log for eligibility
+            if (canBorrow == null) {
+                // if student has no previous transactions: they can borrow
+                if (!resB.next()) {
+                    canBorrow=true;
+                }
+            } // separete this check in case this part becomes redundant due to the condition above...
+            if (canBorrow == null) {
+                // if student has last borrowed or broken something: they cannot borrow
+                String brwStatus = resB.getString("status");
+                if (brwStatus.equals("borrowed") || brwStatus.equals("broken"))
+                    canBorrow=false;
+                // inversely, if not borrowed or broken: they can borrow
+                else
+                    canBorrow=true;
+            }
+
+            if (!canBorrow)
                 return "Operation failed! Given student is not elligible to borrow equipment at the moment.";
 
             // Check availability  
@@ -224,7 +260,6 @@ class DbConnection {
                 SELECT * FROM equipment_transaction_log 
                     WHERE equipment_id = %d
                     ORDER BY transaction_date DESC
-                    LIMIT 1;
                 """.formatted(equipment_code);
             PreparedStatement availStmtB = this.Conn.prepareStatement(availabilityQueryB);
             ResultSet availResB = availStmtB.executeQuery();
@@ -240,7 +275,7 @@ class DbConnection {
             String borrowUpdateQuery = """ 
                 INSERT INTO `equipment_transaction_log` 
                     (student_id, equipment_id, labtech_id, transaction_date, remarks, status) VALUES
-                    (%d, %d, %d, CURRENT_DATE(), \"%s\", 'borrowed');
+                    (%d, %d, %d, NOW(), \"%s\", 'borrowed');
                 """.formatted(student_id, equipment_code, lab_tech_id, remarks);
             PreparedStatement brwUpdStmt = this.Conn.prepareStatement(borrowUpdateQuery);
             int affected = brwUpdStmt.executeUpdate();
@@ -249,7 +284,6 @@ class DbConnection {
             String getTIDQuery = """ 
                 SELECT transaction_id FROM equipment_transaction_log
                     ORDER BY transaction_date DESC
-                    LIMIT 1
                 """; 
             ResultSet TIDres = this.Conn.prepareStatement(getTIDQuery)
                 .executeQuery();
@@ -278,18 +312,6 @@ class DbConnection {
      */
     public String borrowEquipment(int student_id, int equipment_code, int lab_tech_id) {
         return borrowEquipment(student_id, equipment_code, lab_tech_id, "");
-    }
-
-    public boolean studentCanReturn(int id) {
-        try {
-            // checking borrow log for eligibility
-        }
-
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return false;
     }
 
     /**
@@ -322,7 +344,6 @@ class DbConnection {
                 SELECT * FROM `equipment_transaction_log` 
                     WHERE student_id = %d
                     ORDER BY transaction_date DESC 
-                    LIMIT 1;
                 """.formatted(student_id);
     
             PreparedStatement stmtA = this.Conn.prepareStatement(queryA);
@@ -342,7 +363,7 @@ class DbConnection {
                 canReturn = false;
 
             
-            if (!this.studentCanReturn(student_id))
+            if (!canReturn)
                 return "Operation failed! Given student does not have the specified equipment to return.";
             
             // Actual 'returning' part of the operation
@@ -364,14 +385,13 @@ class DbConnection {
             String returnUpdateQuery = """ 
                 INSERT INTO `equipment_transaction_log` 
                     (student_id, equipment_id, labtech_id, transaction_date, remarks, status) VALUES
-                    (%d, %d, %d, CURRENT_DATE(), "%s", "%s");
+                    (%d, %d, %d, NOW(), "%s", "%s");
                 """.formatted(student_id, equipment_code, lab_tech_id, remarks, returnStatus);
             PreparedStatement rtrnUpdStmt = this.Conn.prepareStatement(returnUpdateQuery);
             int affected = rtrnUpdStmt.executeUpdate();
             String getTIDQuery = """ 
                 SELECT transaction_id FROM equipment_transaction_log
                     ORDER BY transaction_date DESC
-                    LIMIT 1
                 """; 
             ResultSet TIDres = this.Conn.prepareStatement(getTIDQuery)
                 .executeQuery();

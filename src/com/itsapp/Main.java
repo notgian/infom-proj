@@ -12,6 +12,7 @@ public class Main {
                    "This is a test borrow operation"
                    );
         System.out.println(borrow);
+
         String returnEq = dbconn.returnEquipment(
                    12110002,
                    10400500,
