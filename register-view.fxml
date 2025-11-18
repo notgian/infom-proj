@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+
+<ScrollPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.eqlab2.RegisterController"
+            fitToWidth="true"
+            prefWidth="400" prefHeight="650">
+
+    <VBox spacing="15" alignment="TOP_CENTER"
+          style="-fx-padding: 20;">
+
+        <Label text="REGISTER"
+               style="-fx-font-size: 26px; -fx-font-weight: bold;" />
+
+        <!-- Role Selector -->
+        <ComboBox fx:id="roleDropdown"
+                  promptText="Select Role"
+                  prefWidth="300"/>
+
+        <!-- STUDENT SECTION -->
+        <VBox fx:id="studentSection" spacing="10" visible="false" managed="false">
+
+            <TextField fx:id="studentIdField" promptText="Student ID (8 digits)" prefWidth="300"/>
+
+            <TextField fx:id="studentFirstField" promptText="First Name" prefWidth="300"/>
+            <TextField fx:id="studentLastField" promptText="Last Name" prefWidth="300"/>
+
+            <TextField fx:id="studentCourseField" promptText="Course (e.g., BSIT)" prefWidth="300"/>
+            <TextField fx:id="studentYearField" promptText="Year Level (1-4)" prefWidth="300"/>
+
+            <ComboBox fx:id="studentStatusDropdown" prefWidth="300" promptText="Enrollment Status"/>
+
+            <TextField fx:id="studentEmailField" promptText="Email" prefWidth="300"/>
+        </VBox>
+
+
+        <!-- EQUIPMENT SECTION -->
+        <VBox fx:id="equipmentSection" spacing="10" visible="false" managed="false">
+
+            <TextField fx:id="equipNameField" promptText="Equipment Name" prefWidth="300"/>
+            <TextField fx:id="equipDescField" promptText="Description" prefWidth="300"/>
+
+        </VBox>
+
+
+        <!-- LAB SECTION -->
+        <VBox fx:id="labSection" spacing="10" visible="false" managed="false">
+
+            <TextField fx:id="labLocationField" promptText="Location" prefWidth="300"/>
+            <TextField fx:id="labDescField" promptText="Description" prefWidth="300"/>
+            <TextField fx:id="labCapacityField" promptText="Capacity (1-30)" prefWidth="300"/>
+        </VBox>
+
+
+        <!-- ORG SECTION -->
+        <VBox fx:id="orgSection" spacing="10" visible="false" managed="false">
+
+            <TextField fx:id="orgNameField" promptText="Organization Name" prefWidth="300"/>
+            <TextField fx:id="orgEmailField" promptText="Organization Email" prefWidth="300"/>
+        </VBox>
+
+
+
+        <!-- BUTTONS -->
+        <Button text="REGISTER"
+                onAction="#handleRegister"
+                prefWidth="200"
+                style="-fx-background-color: #90caf9;
+                        -fx-background-radius: 20;
+                        -fx-font-size: 16px;
+                        -fx-font-weight: bold;" />
+
+        <Button text="Back"
+            onAction="#goBackToHome"
+            prefWidth="200"
+            style="-fx-background-color: #d0d0d0; -fx-background-radius: 15;" />        
+
+    </VBox>
+
+</ScrollPane>
+
+

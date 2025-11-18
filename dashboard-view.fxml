@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.example.eqlab2.DashboardController"
+      alignment="CENTER"
+      spacing="30"
+      prefWidth="400" prefHeight="650"
+      style="-fx-padding: 40; -fx-background-color: #e7eefc;">
+
+    <Label text="Welcome!"
+           style="-fx-font-size: 26px; -fx-font-weight: bold;" />
+
+    <Button text="Reserve a Lab"
+            onAction="#goToReservation"
+            prefWidth="260" prefHeight="55"
+            style="-fx-background-color: #90caf9;
+                   -fx-background-radius: 20;
+                   -fx-font-size: 18;
+                   -fx-font-weight: bold;" />
+
+    <Button text="Borrow Lab Equipment"
+            onAction="#goToBorrow"
+            prefWidth="260" prefHeight="55"
+            style="-fx-background-color: #ce93d8;
+                   -fx-background-radius: 20;
+                   -fx-font-size: 18;
+                   -fx-font-weight: bold;" />
+
+     <Button text="Return Lab Equipment"
+            onAction="#goToReturn"
+            prefWidth="260" prefHeight="55"
+            style="-fx-background-color: #ce93d8;
+                   -fx-background-radius: 20;
+                   -fx-font-size: 18;
+                   -fx-font-weight: bold;" />  
+
+    <Button text="Logout"
+            onAction="#logout"
+            prefWidth="200" prefHeight="40"
+            style="-fx-background-color: #bdbdbd;
+                   -fx-background-radius: 15;" />
+
+</VBox>
