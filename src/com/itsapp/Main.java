@@ -53,71 +53,105 @@ public class Main {
 
         System.out.println("\n=== TESTING RESERVING LAB / CANCELLING RESERVATION ===");
 
+        // Valid reservation: No Conflict, Student Rep is officer, >72 hours ahead
         String reservingLab = dbconn.reserveLab(
-            30000001, // CompSoc
-            40000001, // Goks 101
-            10001001, // Michael Scott
-            "2025-12-15", // safely >72 hours ahead
+            12010001,
+            30000001,
+            40000001,
+            10001001,
+            "2025-12-16", // Tuesday — no class
             "10:00:00",
             "12:00:00",
             "This is a test reservation (valid)"
         );
         System.out.println(reservingLab);
 
+        // Valid cancellation: >24 hours ahead
         String cancellingReservation = dbconn.cancelLabReservation(
-            10000030, // Reservation ID for CompSoc, Goks 101, 2025-12-15 10:00–12:00 (the previous transaction)
-            10001001, // Michael Scott
+            10000030, // previous reservation made above
+            12010001, // student rep who made it
             "This is a test cancellation (valid)"
         );
         System.out.println(cancellingReservation);
 
+        // Too late reservation: <72 hours ahead
         String reserveTooLate = dbconn.reserveLab(
+            12010001, // Michael Scott
             30000001,
             40000001,
             10001001,
-            LocalDate.now().plusDays(2).toString(), // <72 hours ahead
+            LocalDate.now().plusDays(2).toString(),
             "10:00:00",
             "12:00:00",
             "This is a test reservation (too late)"
         );
         System.out.println(reserveTooLate);
 
+        // Overlapping reservation: Goks 101 already reserved on 2025-12-01 from 10:00–12:00
         String overlappingReservation = dbconn.reserveLab(
+            12010001,
             30000001,
-            40000001, // Goks 101 already reserved on 2025-12-01 from 10:00–12:00
+            40000001,
             10001001,
             "2025-12-01",
-            "11:00:00", // overlaps with 10:00–12:00
+            "11:00:00",
             "13:00:00",
             "This is a test reservation (overlap)"
         );
         System.out.println(overlappingReservation);
 
         String cancelDuringTimeslot = dbconn.cancelLabReservation(
-            3015, // Reservation ID for CompSoc, Goks 101, 2025-12-01 10:00–12:00
-            10001001,
+            10000001,
+            12010002,
             "This is a test cancellation (during timeslot)"
         );
         System.out.println(cancelDuringTimeslot);
 
+        // <24 hours before reservation time
         String cancelTooLate = dbconn.cancelLabReservation(
-            3016, // Reservation ID for IEEE, Goks 102, 2025-12-01 14:00–16:00 (assumed tomorrow)
-            10001003,
+            10000005,
+            12310002,
             "This is a test cancellation (too late)"
         );
         System.out.println(cancelTooLate);
 
+        // Invalid time range
         String invalidTimeRange = dbconn.reserveLab(
-            30000001, // CompSoc
-            40000001, // Goks 101
-            10001001, // Michael Scott
-            "2025-12-10", // valid future date
-            "14:00:00",  // start time
-            "10:00:00",  // end time (earlier than start)
-            "This is a test reservation where end time is earlier than start time"
+            12010001,
+            30000001,
+            40000001,
+            10001001,
+            "2025-12-10",
+            "14:00:00",
+            "10:00:00",
+            "End time earlier than start time"
         );
         System.out.println(invalidTimeRange);
-    }
 
+        String memberOnlyReservation = dbconn.reserveLab(
+            12010002, // Member of CompSoc, not officer
+            30000001,
+            40000001,
+            10001001,
+            "2025-12-18",
+            "10:00:00",
+            "12:00:00",
+            "Reservation by member (should fail)"
+        );
+        System.out.println(memberOnlyReservation);
+
+        String duringClassSchedule = dbconn.reserveLab(
+            12010001,
+            30000001,
+            40000001,
+            10001001,
+            "2025-12-08", // Goks 101 has class on Monday 08:00–11:00
+            "08:30:00",
+            "10:30:00",
+            "Reservation during class schedule (should fail)"
+        );
+        System.out.println(duringClassSchedule);
+
+    }
 }
 
