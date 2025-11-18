@@ -10,7 +10,7 @@
 
     <VBox alignment="CENTER" spacing="20" layoutX="70" layoutY="100" prefWidth="260">
 
-        <Label text="EQLAB" style="-fx-font-size: 32px; -fx-font-weight: bold;" />
+        <Label text="EQLABS" style="-fx-font-size: 32px; -fx-font-weight: bold;" />
 
         <Label text="Equipment Borrowing and Lab Reservation System"
                wrapText="true" maxWidth="250" style="-fx-text-fill: gray;" />

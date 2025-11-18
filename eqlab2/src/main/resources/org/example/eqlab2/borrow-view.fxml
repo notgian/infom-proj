@@ -22,8 +22,15 @@
         <Label text="Borrow an item from the laboratory"
                style="-fx-font-size: 14px; -fx-text-fill: #555;" />
 
+       <Label text="Enter Student ID"
+               style="-fx-font-size: 14px; -fx-text-fill: #555;" />
+       <!-- Student ID Display -->
+       <TextField fx:id="studentIdDisplay"
+           promptText="Enter Student ID"
+           prefWidth="200"/>
+
         <!-- Select Date -->
-        <Label text="Select Date:"
+        <Label text="BORROW DATE:"
                style="-fx-font-size: 14px; -fx-font-weight: bold;" />
         <DatePicker fx:id="borrowDate" prefWidth="250"/>
 
