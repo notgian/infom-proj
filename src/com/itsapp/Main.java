@@ -1,51 +1,50 @@
 package com.itsapp;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
 public class Main {
     
     public static void main(String[] args) {
-        DbConnection dbconn = new DbConnection();
-        dbconn.connect();
+        DbConnection dbconn = new DbConnection(); dbconn.connect();
 
-        String borrow = dbconn.borrowEquipment(
-                   12110002,
-                   10200400,
-                   10003003,
-                   "This is a test borrow operation"
-                   );
-        System.out.println(borrow);
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
-        String returnEq = dbconn.returnEquipment(
-                   12110002,
-                   10200400,
-                   10003003,
-                   "This is a test return operation",
-                   true
-                   );
-        System.out.println(returnEq);
+        try {
 
-        String borrow2 = dbconn.borrowEquipment(
-                   12110002,
-                   10200400,
-                   10003003,
-                   "This is a test borrow operation"
-                   );
-        System.out.println(borrow2);
+            dateFormatter.parse("0000-00-00");
+            Report tables[] = {
+                // dbconn.reportEquipmentBorrowingHistory(),
+                // dbconn.reportLabReservationHistory(),
+                // dbconn.reportStudentEquipmentBorrowHistory(null),
+                // dbconn.reportOrgLabReservationHistory(null),
+                dbconn.reportLabTechApprovalHistory(null),
+                dbconn.reportLabTechApprovalHistory(10001002),
+            };
 
-        String returnEq2 = dbconn.returnEquipment(
-                   12110002,
-                   10200400,
-                   10003003,
-                   "This is a test return operation",
-                   true
-                   );
-        System.out.println(returnEq2);
+            for (int k=0; k<tables.length; k++) {
+                String[][] table = tables[k].getTable();
 
-        String replc = dbconn.replaceEquipment(
-                12110002, 
-                10003003,
-                "New computer ig", 
-                "This is a result of a test insert to replace some equipment");
-        System.out.println(replc);
+                System.out.println(table.length);
+
+                for (int i = 0; i < table.length; i++) {
+                    for (int j = 0; j < table[i].length; j++) {
+                        System.out.print("%s, ".formatted(table[i][j]));
+                    }
+                    System.out.print("\n");
+                }
+
+                System.out.println(); 
+            }
+
+        }
+        catch (InvalidFields e) {
+            e.printStackTrace();
+        }
+        catch (ParseException e) {
+            e.printStackTrace();
+        }
+
 
     }
 
