@@ -22,7 +22,7 @@ public class ReportsController {
 
     // ROLE
     @FXML private ComboBox<String> roleDropdown;
-    
+
     //EQUIPMENT BORROWING HISTORY REPORT
     @FXML private VBox equipmentBorrowingSection; 
     @FXML private TableView<List<String>> equipmenTable;
@@ -31,24 +31,24 @@ public class ReportsController {
     //LABORATORY RESERVATION HISTORY REPORT
     @FXML private VBox laboratoryReservationSection;
     @FXML private TableView<List<String>> labreserveTable;
- 
+
 
     //STUDENT BORROWING HISTORY REPORT
     @FXML private VBox studentBorrowingSection;
     @FXML private TableView<List<String>> studentTable;
- 
+
 
     //ORG LAB RESERVATION HISTORY REPORT
     @FXML private VBox organizationLabReservationSection;
     @FXML private TableView<List<String>> orgreserveTable;
- 
+
 
     //LABTECH TRANSACTION HISTORY REPORT
     @FXML private VBox labtechTransactionSection; 
     @FXML private TableView<List<String>> labtechTable;
 
 
-    
+
 
     @FXML
     public void initialize() {
@@ -87,31 +87,62 @@ public class ReportsController {
         String role = roleDropdown.getValue();
         if (role == null) return;
 
-        switch (role) {
-            case "Equipment Borrowing History":
-                equipmentBorrowingSection.setVisible(true);
-                equipmentBorrowingSection.setManaged(true);
-                break;
+        try {
+            switch (role) {
+                case "Equipment Borrowing History":
+                    load2DArrayToTable(DbConnection.reportEquipmentBorrowingHistory().getTable(), equipmenTable);
+                    equipmentBorrowingSection.setVisible(true);
+                    equipmentBorrowingSection.setManaged(true);
+                    break;
 
-            case "Laboratory Reservation History":
-                laboratoryReservationSection.setVisible(true);
-                laboratoryReservationSection.setManaged(true);
-                break;
+                case "Laboratory Reservation History":
+                    laboratoryReservationSection.setVisible(true);
+                    laboratoryReservationSection.setManaged(true);
+                    break;
 
-            case "Student Borrowing History":
-                studentBorrowingSection.setVisible(true);
-                studentBorrowingSection.setManaged(true);
-                break;
+                case "Student Borrowing History":
+                    studentBorrowingSection.setVisible(true);
+                    studentBorrowingSection.setManaged(true);
+                    break;
 
-            case "Organization Reservation History":
-                organizationLabReservationSection.setVisible(true);
-                organizationLabReservationSection.setManaged(true);
-                break;
+                case "Organization Reservation History":
+                    organizationLabReservationSection.setVisible(true);
+                    organizationLabReservationSection.setManaged(true);
+                    break;
 
-            case "Lab Technician Transaction History":
-                labtechTransactionSection.setVisible(true);
-                labtechTransactionSection.setManaged(true);
-                break;    
+                case "Lab Technician Transaction History":
+                    labtechTransactionSection.setVisible(true);
+                    labtechTransactionSection.setManaged(true);
+                    break;    
+            }
+        }
+        catch (InvalidFields e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void load2DArrayToTable(String[][] data, TableView<List<String>> table) {
+        table.getColumns().clear();
+        table.getItems().clear();
+
+        int columnCount = data[0].length;
+
+        // Create columns
+        for (int c = 0; c < columnCount; c++) {
+            final int colIndex = c;
+            TableColumn<List<String>, String> column = new TableColumn<>("Column " + (c + 1));
+
+            column.setCellValueFactory(param ->
+                    new SimpleStringProperty(param.getValue().get(colIndex))
+                    );
+
+            table.getColumns().add(column);
+        }
+
+        // Add rows
+        for (String[] row : data) {
+            table.getItems().add(Arrays.asList(row));
         }
     }
 
@@ -122,7 +153,7 @@ public class ReportsController {
     public void goBackToDashboard(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(
                 getClass().getResource("/org/example/eqlab2/dashboard-view.fxml")
-        );
+                );
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setScene(new Scene(root, 400, 650));
     }
