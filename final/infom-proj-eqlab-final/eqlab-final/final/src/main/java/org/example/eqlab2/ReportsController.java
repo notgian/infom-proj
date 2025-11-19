@@ -25,7 +25,7 @@ public class ReportsController {
 
     //EQUIPMENT BORROWING HISTORY REPORT
     @FXML private VBox equipmentBorrowingSection; 
-    @FXML private TableView<List<String>> equipmenTable;
+    @FXML private TableView<List<String>> equipmentTable;
 
 
     //LABORATORY RESERVATION HISTORY REPORT
@@ -90,7 +90,7 @@ public class ReportsController {
         try {
             switch (role) {
                 case "Equipment Borrowing History":
-                    load2DArrayToTable(DbConnection.reportEquipmentBorrowingHistory().getTable(), equipmenTable);
+                    load2DArrayToTable(DbConnection.reportEquipmentBorrowingHistory().getTable(), equipmentTable);
                     equipmentBorrowingSection.setVisible(true);
                     equipmentBorrowingSection.setManaged(true);
                     break;
@@ -122,29 +122,35 @@ public class ReportsController {
 
     }
 
-    private void load2DArrayToTable(String[][] data, TableView<List<String>> table) {
-        table.getColumns().clear();
-        table.getItems().clear();
+private void load2DArrayToTable(String[][] data, TableView<List<String>> table) {
 
-        int columnCount = data[0].length;
+    table.getColumns().clear();
+    table.getItems().clear();
 
-        // Create columns
-        for (int c = 0; c < columnCount; c++) {
-            final int colIndex = c;
-            TableColumn<List<String>, String> column = new TableColumn<>("Column " + (c + 1));
+    if (data == null || data.length == 0) return;
 
-            column.setCellValueFactory(param ->
-                    new SimpleStringProperty(param.getValue().get(colIndex))
-                    );
+    int columnCount = data[0].length;
 
-            table.getColumns().add(column);
-        }
+    // === Create columns using FIRST ROW as header ===
+    for (int c = 0; c < columnCount; c++) {
+        final int colIndex = c;
 
-        // Add rows
-        for (String[] row : data) {
-            table.getItems().add(Arrays.asList(row));
-        }
+        String header = data[0][c];  // <-- column name from first row
+
+        TableColumn<List<String>, String> column = new TableColumn<>(header);
+
+        column.setCellValueFactory(param ->
+                new SimpleStringProperty(param.getValue().get(colIndex))
+        );
+
+        table.getColumns().add(column);
     }
+
+    // === Add data rows (start from row 1, skip header row) ===
+    for (int r = 1; r < data.length; r++) {
+        table.getItems().add(Arrays.asList(data[r]));
+    }
+}
 
     // ============================
     //         NAVIGATION
