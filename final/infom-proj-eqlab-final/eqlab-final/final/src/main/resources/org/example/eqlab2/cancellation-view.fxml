@@ -23,33 +23,11 @@
                style="-fx-size: 14px; -fx-text-fill: #555;" />
 
         <VBox spacing="10">
-            <Label text="Enter Student ID:"
+            <Label text="Enter Reservation ID:"
                    style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
-            <TextField fx:id="studentIdField"
-                       promptText="Student ID (8 digits)"
+            <TextField fx:id="reservationIdField"
+                       promptText="reservation id (8 digits)"
                        prefWidth="260"/>
-        </VBox>
-
-        <VBox spacing="10">
-            <Label text="Reservation Date:"
-                   style="-fx-font-size: 14px; -fx-font-weight: bold;" />
-            <DatePicker fx:id="cancellationDate" prefWidth="260"/>
-        </VBox>
-
-        <VBox spacing="10">
-            <Label text="Select Reserved Laboratory:"
-                   style="-fx-font-size: 14px; -fx-font-weight: bold;" />
-            <ComboBox fx:id="labCombo" prefWidth="260"
-                      promptText="Choose Laboratory" />
-        </VBox>
-
-        <VBox spacing="10">
-            <Label text="Time Slot (Optional):"
-                   style="-fx-font-size: 14px; -fx-font-weight: bold;" />
-            <HBox spacing="10">
-                <ComboBox fx:id="startTimeCombo" promptText="Start" prefWidth="125"/>
-                <ComboBox fx:id="endTimeCombo" promptText="End" prefWidth="125"/>
-            </HBox>
         </VBox>
 
         <Button text="CONFIRM CANCELLATION"

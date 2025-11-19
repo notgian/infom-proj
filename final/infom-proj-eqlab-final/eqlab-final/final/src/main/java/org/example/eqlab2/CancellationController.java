@@ -43,9 +43,17 @@ public class CancellationController {
         }
 
         // Call the thing
+        try {
+
+            DbReturn res = DbConnection.cancelLabReservation(Integer.parseInt(reservationId), DbConnection.getLabTechID());
+            showAlert(Alert.AlertType.WARNING, res.getTitle(), res.getMessage());
+        }
+        catch (Exception e) {
+            e.printStackTrace();            
+        }
+
         
         // DbResult res = DbConnection.cancelLabReservation(Integer.parseInt(reservationId) )
-        showAlert(Alert.AlertType.WARNING, "Reservation Not Found", "message");
     }
 
     //same popup template
