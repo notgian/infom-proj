@@ -63,7 +63,21 @@ public class ReturnController {
         }
 
         // Success popup -------------------------------------------------------
-        showAlert(Alert.AlertType.INFORMATION, "Success!","string");
+       
+        try {
+            int student_id = Integer.parseInt(studentIdDisplay.getText());
+            int equipment_id = Integer.parseInt(equipmentDropdown.getValue().substring(1,9));
+            
+            boolean broken = conditionDropdown.getValue().equals("ok") ? false : true;
+
+            String remarks = notesField.getText();
+
+            DbReturn res = DbConnection.returnEquipment(student_id, equipment_id, DbConnection.getLabTechID(), remarks, broken);
+            showAlert(Alert.AlertType.INFORMATION, res.getTitle(), res.getMessage());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // Clear form
         clearForm();
