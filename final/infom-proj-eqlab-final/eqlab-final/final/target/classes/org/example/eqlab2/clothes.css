@@ -1,0 +1,240 @@
+.root {
+    -fx-background-image: url("images/bg2.jpeg");
+    -fx-background-size:cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+
+.logoImage {
+     -fx-padding: 30px;
+}
+
+/* global btn designs type shift*/
+.button {
+    -fx-background-radius: 20;
+    -fx-background-insets: 0;
+    -fx-padding: 12 0;
+    -fx-text-fill: #000;
+    -fx-font-weight: bold;
+    -fx-border-color: #1a1a1a;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 20;
+    /* bougie hover effect */
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 5, 0.0, 0, 1);
+    -fx-cursor: hand;
+    -fx-transition-duration: 0.2s;
+}
+
+.button:hover {
+    -fx-border-color: gray;
+    -fx-border-width: 2;
+    -fx-scale-y: 1.05;
+    -fx-scale-x: 1.05;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 10, 0.0, 0, 2);
+}
+
+/* homepage btns*/
+#loginButton {
+    -fx-background-color: #90caf9;
+}
+#loginButton:hover {
+    -fx-background-color: #64b5f6;
+}
+
+#registerButton {
+    -fx-background-color: #1976d2;
+    -fx-text-fill: #fff;
+}
+#registerButton:hover {
+    -fx-background-color: #0d47a1;
+}
+
+/* dashboard btns */
+#reserveButton {
+    -fx-background-color: #90caf9;
+    -fx-font-size: 18px;
+}
+#reserveButton:hover {
+    -fx-background-color: #64b5f6;
+}
+
+#borrowButton {
+    -fx-background-color: #00176a;
+    -fx-text-fill: #fff;
+    -fx-font-size: 18px;
+}
+#borrowButton:hover {
+    -fx-background-color: #000f4f;
+}
+
+/* reserve lab btns*/
+#reserve1Button {
+    -fx-background-color: #00176a;
+    -fx-font-size: 18px;
+    -fx-text-fill: #fff;
+    /* Removed duplicate font-size */
+}
+#reserve1Button:hover {
+    -fx-background-color: #000f4f;
+}
+
+#backButton {
+    -fx-background-color: #bdbdbd;
+    -fx-text-fill: #000;
+    -fx-background-radius: 15;
+    -fx-border-color: #555;
+    -fx-border-radius: 15;
+    -fx-padding: 8 0;
+    -fx-border-width: 1;
+}
+#backButton:hover {
+    -fx-background-color: #9e9e9e;
+    -fx-border-color: #333;
+    -fx-border-width: 1.5;
+}
+
+/* ReturnController btn styles */
+.return-submit-button {
+    -fx-background-color: #89c4ff;
+    -fx-background-radius: 30;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-border-radius: 30;
+    -fx-padding: 15 0;
+}
+.return-submit-button:hover {
+    -fx-background-color: #5b99f3;
+}
+
+.return-back-button {
+    -fx-background-color: #bdbdbd;
+    -fx-background-radius: 15;
+    -fx-padding: 10 0;
+    -fx-border-radius: 15;
+    -fx-border-color: #555;
+    -fx-border-width: 1;
+}
+.return-back-button:hover {
+    -fx-background-color: #9e9e9e;
+}
+
+/* RegisterController btn styles */
+.register-button {
+    -fx-background-color: #90caf9;
+    -fx-background-radius: 20;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+.register-button:hover {
+    -fx-background-color: #64b5f6;
+}
+
+.register-back-button {
+    -fx-background-color: #d0d0d0;
+    -fx-background-radius: 15;
+    -fx-padding: 10 0;
+    -fx-border-radius: 15;
+    -fx-border-color: #777;
+    -fx-border-width: 1;
+}
+.register-back-button:hover {
+    -fx-background-color: #b0b0b0;
+}
+
+
+/* BorrowController btn styles */
+.borrow-submit-button {
+    -fx-background-color: #89c4ff;
+    -fx-background-radius: 30;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-border-radius: 30;
+    -fx-padding: 15 0;
+}
+.borrow-submit-button:hover {
+    -fx-background-color: #5b99f3;
+}
+
+.borrow-back-button {
+    -fx-background-color: #bdbdbd;
+    -fx-background-radius: 15;
+    -fx-padding: 10 0;
+    -fx-border-radius: 15;
+    -fx-border-color: #555;
+    -fx-border-width: 1;
+}
+.borrow-back-button:hover {
+    -fx-background-color: #9e9e9e;
+}
+
+
+/* DashboardController btn styles*/
+.dashboard-reserve-button {
+    -fx-background-color: #90caf9;
+    -fx-background-radius: 20;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-padding: 15 0;
+    -fx-border-color: #1a1a1a;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 20;
+}
+.dashboard-reserve-button:hover {
+    -fx-background-color: #64b5f6;
+}
+
+.dashboard-borrow-button, .dashboard-return-button {
+    -fx-background-color: #ce93d8;
+    -fx-background-radius: 20;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-padding: 15 0;
+    -fx-border-color: #1a1a1a;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 20;
+}
+.dashboard-borrow-button:hover, .dashboard-return-button:hover {
+    -fx-background-color: #af60c6;
+}
+
+.dashboard-logout-button {
+    -fx-background-color: #bdbdbd;
+    -fx-background-radius: 15;
+    -fx-padding: 8 0;
+    -fx-border-color: #555;
+    -fx-border-width: 1;
+    -fx-border-radius: 15;
+}
+.dashboard-logout-button:hover {
+    -fx-background-color: #9e9e9e;
+}
+
+/* cancel btn clothes */
+.cancel-reservation-button {
+    -fx-background-color: #E53935;
+    -fx-background-radius: 20;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-padding: 15 0;
+    -fx-border-color: #1a1a1a;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 20;
+}
+.cancel-reservation-button:hover {
+    -fx-background-color: #C62828;
+    -fx-scale-y: 1.05;
+    -fx-scale-x: 1.05;
+}
+
+.cancel-back-button {
+    -fx-background-color: #bdbdbd;
+    -fx-background-radius: 15;
+    -fx-padding: 10 0;
+    -fx-border-radius: 15;
+    -fx-border-color: #555;
+    -fx-border-width: 1;
+}
+.cancel-back-button:hover {
+    -fx-background-color: #9e9e9e;
+}

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.eqlab2.BorrowController"
+            prefWidth="400" prefHeight="650"
+            style="-fx-background-color: #e8eefc;"
+            stylesheets="@clothes.css">
+
+    <VBox alignment="TOP_CENTER" spacing="20"
+          layoutX="20" layoutY="20"
+          prefWidth="360"
+          style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 20;">
+
+        <Label text="BORROW EQUIPMENT"
+               style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+
+        <Label text="Borrow an item from the laboratory"
+               style="-fx-font-size: 14px; -fx-text-fill: #555;" />
+
+        <Label text="Enter Student ID"
+               style="-fx-font-size: 14px; -fx-text-fill: #555;" />
+        <TextField fx:id="studentIdDisplay"
+                   promptText="Enter Student ID"
+                   prefWidth="200"/>
+
+        <Label text="BORROW DATE:"
+               style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+        <DatePicker fx:id="borrowDate" prefWidth="250"/>
+
+        <Label text="Select Equipment:"
+               style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+        <ComboBox fx:id="equipmentDropdown" prefWidth="250"
+                  promptText="Choose equipment" />
+
+        <Label text="Select Time:"
+               style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+
+        <HBox spacing="15" alignment="CENTER">
+            <ComboBox fx:id="startTime" promptText="Start" prefWidth="110"/>
+            <ComboBox fx:id="endTime" promptText="End" prefWidth="110"/>
+        </HBox>
+
+        <Button text="BORROW"
+                onAction="#submitBorrowRequest"
+                prefWidth="250"
+                styleClass="borrow-submit-button" />
+
+        <Button text="Back"
+                onAction="#goBack"
+                prefWidth="200"
+                styleClass="borrow-back-button" />
+    </VBox>
+
+</AnchorPane>
