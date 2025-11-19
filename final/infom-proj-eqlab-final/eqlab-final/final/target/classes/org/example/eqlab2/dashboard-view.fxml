@@ -34,8 +34,9 @@
     <Button text="Return Lab Equipment"
             onAction="#goToReturn"
             prefWidth="260" prefHeight="55"
-            styleClass="dashboard-return-button" />
+    styleClass="dashboard-return-button" />
 
+    <Button text="Reports" onAction="#goToReport" prefWidth="260" prefHeight="55" styleClass="dashboard-return-button"/>
     <Button text="Logout"
             onAction="#logout"
             prefWidth="200" prefHeight="40"

@@ -24,16 +24,29 @@
                style="-fx-text-fill: #555;" />
 
         <VBox spacing="10">
+            <Label text="Select Laboratory:"
+                   style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+            <ComboBox fx:id="labCombo" prefWidth="260" promptText="Choose a lab"/>
+        </VBox>
+
+        <VBox spacing="10">
+            <Label text="Select Org:"
+                   style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+            <ComboBox fx:id="studentOrgDropdown" prefWidth="260" promptText="Choose a lab"/>
+            </VBox>
+
+        <Label text="Enter Student Rep ID"
+               style="-fx-font-size: 14px; -fx-text-fill: #555;" />
+        <TextField fx:id="studentIdField"
+                   promptText="Enter Student ID"
+                   prefWidth="200"/>
+
+        <VBox spacing="10">
             <Label text="Select Date:"
                    style="-fx-font-size: 14px; -fx-font-font-weight: bold;" />
             <DatePicker fx:id="datePicker" prefWidth="260"/>
         </VBox>
 
-        <VBox spacing="10">
-            <Label text="Select Laboratory:"
-                   style="-fx-font-size: 14px; -fx-font-weight: bold;" />
-            <ComboBox fx:id="labCombo" prefWidth="260" promptText="Choose a lab"/>
-        </VBox>
 
         <VBox spacing="10">
             <Label text="Select Time:"

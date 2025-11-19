@@ -29,11 +29,11 @@ public class ReturnController {
 
     @FXML
     public void initialize() {
-
         // Equipment list (same as Borrow page)
-        equipmentDropdown.getItems().addAll(
-
-        ); // CHANGE ME 
+        String[] equipment = DbConnection.getEquipment();
+        for (String e: equipment) {
+            equipmentDropdown.getItems().add(e);
+        }
 
         // Condition options
         conditionDropdown.getItems().addAll(

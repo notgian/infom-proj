@@ -23,9 +23,16 @@ public class ReservationController {
     @FXML private ComboBox<String> studentOrgDropdown;
 
     public void initialize() {
-        studentOrgDropdown.getItems().addAll("Org1", "Org2"); // CHANGE ME
-        labCombo.getItems().addAll(
-        ); // CHANGE ME
+        String[] orgs = DbConnection.getOrgs();
+        String[] labs = DbConnection.getLabs();
+
+        for (String org: orgs) {
+            studentOrgDropdown.getItems().add(org);
+        }
+
+        for (String lab: labs) {
+            labCombo.getItems().add(lab);
+        }
 
         // time slots, and it's only until 5 since labs close 5-ish
         for (int hour = 7; hour <= 16; hour++) {
@@ -67,36 +74,9 @@ public class ReservationController {
         }
 
         //checking labroom availability
-        if (isLabAvailable(selectedLab, selectedDate, startHour, endHour)) {
-            String receiptMessage = String.format(
-                    "Lab Room: %s\n" +
-                            "Date: %s\n" +
-                            "Time Slot: %s - %s\n\n" +
-                            "Your reservation is confirmed. Click 'OK' to finalize.",
-                    selectedLab, selectedDate.toString(), selectedStartTime, selectedEndTime
-            );
-            showAlert(Alert.AlertType.INFORMATION, "Reservation Confirmed", receiptMessage);
-            clearForm();
-        } else {
-            String unavailableMessage = String.format(
-                    "The requested lab (%s) is already reserved for the slot:\n" +
-                            "Date: %s\n" +
-                            "Time: %s - %s\n\n" +
-                            "Please select a different time slot or another laboratory.",
-                    selectedLab, selectedDate.toString(), selectedStartTime, selectedEndTime
-            );
-            showAlert(Alert.AlertType.WARNING, "Slot Not Available", unavailableMessage);
-        }
-    }
-
-    // hi so i wanted to check if the checking is working so i added this method
-    // totally deletable when we go over it in a while
-    private boolean isLabAvailable(String lab, LocalDate date, int startHour, int endHour) {
-        Random random = new Random();
-        if (lab.equals("Laboratory 202")) {
-            return random.nextDouble() > 0.8;
-        }
-        return random.nextDouble() > 0.2;
+        // DbConnection.reserveLab(student_rep_id, org_id, lab_code, lab_tech_id, reservation_date, start_time, end_time, remarks)
+        // showAlert(Alert.AlertType.INFORMATION, "Reservation Confirmed", receiptMessage);
+        clearForm();
     }
 
     //Clears the input fields of the form if the user intendeds to reserve more than

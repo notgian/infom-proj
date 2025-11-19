@@ -17,7 +17,7 @@ import java.util.Random;
 
 public class CancellationController {
 
-    @FXML private TextField studentIdField;
+    @FXML private TextField reservationIdField;
 
     @FXML
     public void initialize() {
@@ -26,25 +26,26 @@ public class CancellationController {
 
     @FXML
     public void handleCancel(ActionEvent event) {
-        String studentId = studentIdField.getText().trim();
-
-        // id number must be 8 digits (got it from eulan)
-        if (!studentId.matches("\\d{8}")) {
-            showAlert(Alert.AlertType.ERROR, "Invalid Student ID",
-                    "The Student ID must be exactly 8 digits.");
-            return;
-        }
+        String reservationId = reservationIdField.getText().trim();
 
         // field validation
-        if (studentId == null) {
+        if (reservationId == null) {
             showAlert(Alert.AlertType.ERROR, "Missing Required Fields",
-                    "Please select the Lab and the Date of the reservation to proceed with cancellation.");
+                    "Please enter the reservation ID number.");
             return;
         }
 
-        // cancellation checker
+        // id number must be 8 digits (got it from eulan)
+        if (!reservationId.matches("\\d{8}")) {
+            showAlert(Alert.AlertType.ERROR, "Invalid Reservation ID",
+                    "The Reservation ID must be exactly 8 digits.");
+            return;
+        }
+
         // Call the thing
-        showAlert(Alert.AlertType.WARNING, "Reservation Not Found", failureMessage);
+        
+        // DbResult res = DbConnection.cancelLabReservation(Integer.parseInt(reservationId) )
+        showAlert(Alert.AlertType.WARNING, "Reservation Not Found", "message");
     }
 
     //same popup template

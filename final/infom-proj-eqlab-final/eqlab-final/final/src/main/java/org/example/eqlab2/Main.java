@@ -17,6 +17,8 @@ public class Main extends Application {
         stage.setTitle("EQLAB");
         stage.setScene(scene);
         stage.show();
+
+        DbConnection.connect();
     }
 
     public static void main(String[] args) {

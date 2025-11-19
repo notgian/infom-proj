@@ -7,9 +7,13 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.scene.control.*;
 import java.io.IOException;
 
-public class EqlabController {
+public class EqlabController { 
+    
+    @FXML
+    private TextField labTechIdField;
 
     private Stage getStage(ActionEvent event) {
         return (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -49,6 +53,17 @@ public class EqlabController {
     //can be deleted later
     @FXML
     public void goDirectDashboard(ActionEvent event) throws IOException {
+        // try { 
+        //     int lab_tech_id = Integer.parseInt(labTechIdField.getText());
+        //     if (DbConnection.isValidLabTech(lab_tech_id))
         loadScene(event, "dashboard-view.fxml");
+        // } 
+        // catch (NumberFormatException e) {
+        //     e.printStackTrace();
+        // }
+
+
+
+        // loadScene(event, "dashboard-view.fxml");
     }
 }

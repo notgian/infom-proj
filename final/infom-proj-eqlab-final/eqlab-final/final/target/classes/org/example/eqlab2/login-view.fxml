@@ -15,13 +15,9 @@
     <Label text="LOGIN"
            style="-fx-font-size: 28px; -fx-font-weight: bold;" />
 
-    <TextField fx:id="usernameField"
-               promptText="Username"
+    <TextField fx:id="labTechIdField"
+               promptText="lab tech id"
                prefWidth="260" />
-
-    <PasswordField fx:id="passwordField"
-                   promptText="Password"
-                   prefWidth="260" />
 
     <Button fx:id="loginButton"
             id="loginButton"

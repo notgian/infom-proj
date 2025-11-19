@@ -29,6 +29,10 @@
                    promptText="Enter Student ID"
                    prefWidth="200"/>
 
+        <Label text="Return Date:"
+               style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+        <DatePicker fx:id="returnDate" prefWidth="250"/>
+
         <Label text="Equipment:"
                style="-fx-font-size: 14px; -fx-font-weight: bold;" />
         <ComboBox fx:id="equipmentDropdown" prefWidth="250"

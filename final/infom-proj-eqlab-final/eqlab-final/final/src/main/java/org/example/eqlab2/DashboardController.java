@@ -42,6 +42,11 @@ public class DashboardController {
     }
 
     @FXML
+    public void goToReport(ActionEvent event) throws IOException {
+        load(event, "reports-view.fxml");
+    }
+
+    @FXML
     public void logout(ActionEvent event) throws IOException {
         load(event, "homepg-view.fxml");
     }

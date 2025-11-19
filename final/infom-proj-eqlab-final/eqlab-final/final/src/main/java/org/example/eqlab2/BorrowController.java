@@ -10,15 +10,11 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Optional;
 
 public class BorrowController {
-
-    private String studentId; 
 
     @FXML
     private TextField studentIdDisplay;
@@ -29,9 +25,10 @@ public class BorrowController {
     @FXML
     public void initialize() {
         // Equipment list random things
-        equipmentDropdown.getItems().addAll(
-        ); // CHANGE ME
-
+        String[] equipmentList = DbConnection.getEquipment();
+        for (String equipment: equipmentList) {
+            equipmentDropdown.getItems().add(equipment);
+        }
     }
 
         @FXML
