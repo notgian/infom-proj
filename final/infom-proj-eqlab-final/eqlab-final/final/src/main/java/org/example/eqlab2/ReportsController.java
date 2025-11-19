@@ -96,25 +96,25 @@ public class ReportsController {
                     break;
 
                 case "Laboratory Reservation History":
-                    load2DArrayToTable(DbConnection.reportEquipmentBorrowingHistory().getTable(), labreserveTable);
+                    load2DArrayToTable(DbConnection.reportLabReservationHistory().getTable(), labreserveTable);
                     laboratoryReservationSection.setVisible(true);
                     laboratoryReservationSection.setManaged(true);
                     break;
 
                 case "Student Borrowing History":
-                    load2DArrayToTable(DbConnection.reportEquipmentBorrowingHistory().getTable(), studentTable);
+                    load2DArrayToTable(DbConnection.reportStudentEquipmentBorrowHistory(null).getTable(), studentTable);
                     studentBorrowingSection.setVisible(true);
                     studentBorrowingSection.setManaged(true);
                     break;
 
                 case "Organization Reservation History":
-                    load2DArrayToTable(DbConnection.reportEquipmentBorrowingHistory().getTable(), orgreserveTable);
+                    load2DArrayToTable(DbConnection.reportOrgLabReservationHistory(null).getTable(), orgreserveTable);
                     organizationLabReservationSection.setVisible(true);
                     organizationLabReservationSection.setManaged(true);
                     break;
 
                 case "Lab Technician Transaction History":
-                    load2DArrayToTable(DbConnection.reportEquipmentBorrowingHistory().getTable(), labtechTable);
+                    load2DArrayToTable(DbConnection.reportLabTechApprovalHistory(null).getTable(), labtechTable);
                     labtechTransactionSection.setVisible(true);
                     labtechTransactionSection.setManaged(true);
                     break;    

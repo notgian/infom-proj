@@ -28,22 +28,10 @@
                    promptText="Enter Student ID"
                    prefWidth="200"/>
 
-        <Label text="BORROW DATE:"
-               style="-fx-font-size: 14px; -fx-font-weight: bold;" />
-        <DatePicker fx:id="borrowDate" prefWidth="250"/>
-
         <Label text="Select Equipment:"
                style="-fx-font-size: 14px; -fx-font-weight: bold;" />
         <ComboBox fx:id="equipmentDropdown" prefWidth="250"
                   promptText="Choose equipment" />
-
-        <Label text="Select Time:"
-               style="-fx-font-size: 14px; -fx-font-weight: bold;" />
-
-        <HBox spacing="15" alignment="CENTER">
-            <ComboBox fx:id="startTime" promptText="Start" prefWidth="110"/>
-            <ComboBox fx:id="endTime" promptText="End" prefWidth="110"/>
-        </HBox>
 
         <Button text="BORROW"
                 onAction="#submitBorrowRequest"
