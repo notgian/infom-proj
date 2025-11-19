@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+
+<ScrollPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.eqlab2.ReportsController"
+            fitToWidth="true"
+            prefWidth="400" prefHeight="650"
+            stylesheets="@clothes.css">
+
+    <VBox spacing="15" alignment="TOP_CENTER"
+          style="-fx-padding: 20;">
+
+        <Label text="REPORTS"
+               style="-fx-font-size: 26px; -fx-font-weight: bold;" />
+
+        <ComboBox fx:id="roleDropdown"
+                  promptText="Select Report Type"
+                  prefWidth="300"/>
+
+       <VBox fx:id="equipmentBorrowingSection" spacing="10" visible="false" managed="false">
+
+            <TableView fx:id="equipmentTable"
+                    prefWidth="668"
+                    prefHeight="400">
+            </TableView>
+
+        </VBox>
+
+
+
+        <VBox fx:id="laboratoryReservationSection" spacing="10" visible="false" managed="false">
+            <TableView fx:id="labreserveTable"
+                    prefWidth="668"
+                    prefHeight="400">
+            </TableView>
+
+        </VBox>
+
+
+        <VBox fx:id="studentBorrowingSection" spacing="10" visible="false" managed="false">
+            <TableView fx:id="studentTable"
+                    prefWidth="668"
+                    prefHeight="400">
+            </TableView>
+
+        </VBox>
+
+
+        <VBox fx:id="organizationLabReservationSection" spacing="10" visible="false" managed="false">
+            <TableView fx:id="orgreserveTable"
+                    prefWidth="668"
+                    prefHeight="400">
+            </TableView>
+
+    
+        </VBox>
+
+        <VBox fx:id="labtechTransactionSection" spacing="10" visible="false" managed="false">
+            <TableView fx:id="labtechTable"
+                    prefWidth="668"
+                    prefHeight="400">
+            </TableView>
+
+        </VBox>
+
+        <Button text="Back"
+                onAction="#goBackToDashboard"
+                prefWidth="200"
+                styleClass="reports-back-button" />
+
+    </VBox>
+
+</ScrollPane>
