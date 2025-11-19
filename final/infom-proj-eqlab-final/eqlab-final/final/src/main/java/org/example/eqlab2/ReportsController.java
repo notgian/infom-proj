@@ -96,21 +96,25 @@ public class ReportsController {
                     break;
 
                 case "Laboratory Reservation History":
+                    load2DArrayToTable(DbConnection.reportEquipmentBorrowingHistory().getTable(), labreserveTable);
                     laboratoryReservationSection.setVisible(true);
                     laboratoryReservationSection.setManaged(true);
                     break;
 
                 case "Student Borrowing History":
+                    load2DArrayToTable(DbConnection.reportEquipmentBorrowingHistory().getTable(), studentTable);
                     studentBorrowingSection.setVisible(true);
                     studentBorrowingSection.setManaged(true);
                     break;
 
                 case "Organization Reservation History":
+                    load2DArrayToTable(DbConnection.reportEquipmentBorrowingHistory().getTable(), orgreserveTable);
                     organizationLabReservationSection.setVisible(true);
                     organizationLabReservationSection.setManaged(true);
                     break;
 
                 case "Lab Technician Transaction History":
+                    load2DArrayToTable(DbConnection.reportEquipmentBorrowingHistory().getTable(), labtechTable);
                     labtechTransactionSection.setVisible(true);
                     labtechTransactionSection.setManaged(true);
                     break;    
@@ -166,3 +170,4 @@ private void load2DArrayToTable(String[][] data, TableView<List<String>> table) 
 
 
 }
+
