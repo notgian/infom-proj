@@ -13,6 +13,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Random;
+import javafx.scene.control.*;
+import java.time.format.DateTimeFormatter;
 
 public class ReservationController {
 
@@ -21,6 +23,7 @@ public class ReservationController {
     @FXML private ComboBox<String> startTimeCombo;
     @FXML private ComboBox<String> endTimeCombo;
     @FXML private ComboBox<String> studentOrgDropdown;
+    @FXML private TextField studentIdField;
 
     public void initialize() {
         String[] orgs = DbConnection.getOrgs();
@@ -72,11 +75,24 @@ public class ReservationController {
                     "Invalid Time Slot", "The end time must be later than the start time.");
             return;
         }
+        
+        try {
 
-        //checking labroom availability
-        // DbConnection.reserveLab(student_rep_id, org_id, lab_code, lab_tech_id, reservation_date, start_time, end_time, remarks)
-        // showAlert(Alert.AlertType.INFORMATION, "Reservation Confirmed", receiptMessage);
+            int org_id = Integer.parseInt(studentOrgDropdown.getValue().substring(1,9));
+            int lab_id = Integer.parseInt(labCombo.getValue().substring(1,9));
+            int student_id = Integer.parseInt(studentIdField.getText());
+
+            LocalDate reservation_date = datePicker.getValue();
+
+            DateTimeFormatter datefmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            
+            DbReturn res = DbConnection.reserveLab(student_id, org_id, lab_id, DbConnection.getLabTechID(), reservation_date.format(datefmt), end_time, remarks)
+            showAlert(Alert.AlertType.INFORMATION, res.getTitle(), res.getMessage());
         clearForm();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     //Clears the input fields of the form if the user intendeds to reserve more than
