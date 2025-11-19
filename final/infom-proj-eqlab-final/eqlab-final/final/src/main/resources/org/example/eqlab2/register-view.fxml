@@ -34,13 +34,16 @@
 
             <TextField fx:id="studentEmailField" promptText="Email" prefWidth="300"/>
             
-            <ComboBox fx:id="studentOrgDropdown" prefWidth="300" promptText="Enrollment Status"/>
-            <ComboBox fx:id="studentStatusDropdown" prefWidth="300" promptText="Enrollment Status"/>
+            <ComboBox fx:id="studentStatusDropdown" prefWidth="300" promptText="Enrollment status "/>
+            <ComboBox fx:id="studentOrgDropdown" prefWidth="300" promptText="Student org (optional)"/>
+
+            <TextField fx:id="studentOrgPosition" promptText="Position in org" prefWidth="300"/>
         </VBox>
 
 
         <VBox fx:id="equipmentSection" spacing="10" visible="false" managed="false">
 
+            <TextField fx:id="equipIdField" promptText="Equipment Id" prefWidth="300"/>
             <TextField fx:id="equipNameField" promptText="Equipment Name" prefWidth="300"/>
             <TextField fx:id="equipDescField" promptText="Description" prefWidth="300"/>
 
@@ -49,6 +52,7 @@
 
         <VBox fx:id="labSection" spacing="10" visible="false" managed="false">
 
+            <TextField fx:id="labIdField" promptText="Lab Id" prefWidth="300"/>
             <TextField fx:id="labLocationField" promptText="Location" prefWidth="300"/>
             <TextField fx:id="labDescField" promptText="Description" prefWidth="300"/>
             <TextField fx:id="labCapacityField" promptText="Capacity (1-30)" prefWidth="300"/>
@@ -57,6 +61,7 @@
 
         <VBox fx:id="orgSection" spacing="10" visible="false" managed="false">
 
+            <TextField fx:id="orgIdField" promptText="Organization ID" prefWidth="300"/>
             <TextField fx:id="orgNameField" promptText="Organization Name" prefWidth="300"/>
             <TextField fx:id="orgEmailField" promptText="Organization Email" prefWidth="300"/>
         </VBox>

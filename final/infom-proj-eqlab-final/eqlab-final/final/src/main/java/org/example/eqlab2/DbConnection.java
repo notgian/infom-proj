@@ -1255,4 +1255,254 @@ class DbConnection {
 
         return null;
     }
+
+
+    /**
+     * Registers a new student in the system.
+     * 
+     * @param student_id the student ID
+     * @param first_name the student's first name
+     * @param last_name the student's last name
+     * @param course the student's course
+     * @param enrollment_status the student's enrollment status
+     * @param email the student's email
+     * @param org_id the organization ID if the student is part of an organization, -1 otherwise
+     * @param org_position the student's position in the organization if applicable, null otherwise
+     * @return a confirmation message if successful, or an error message if registration fails
+     */
+    public static String registerStudent(int student_id, String first_name, String last_name, String course, int yearLevel,
+                              String enrollment_status, String email, int org_id, String org_position) {
+        StringBuilder validationErrors = new StringBuilder();
+
+        // Step 1: Validate field lengths and values
+        if (String.valueOf(student_id).length() > 8)
+            validationErrors.append("Student ID must be at most 8 digits.\n");
+
+        if (first_name.length() > 20)
+            validationErrors.append("First name must be at most 20 characters.\n");
+
+        if (last_name.length() > 20)
+            validationErrors.append("Last name must be at most 20 characters.\n");
+
+        if (course.length() > 10)
+            validationErrors.append("Course must be at most 10 characters.\n");
+
+        String normalizedStatus = enrollment_status.trim().toLowerCase();
+        if (enrollment_status.length() > 12)
+            validationErrors.append("Enrollment status must be at most 12 characters.\n");
+
+        if (!normalizedStatus.equals("enrolled") && !normalizedStatus.equals("not enrolled"))
+            validationErrors.append("Enrollment status must be either 'enrolled' or 'not enrolled'.\n");
+
+        if (email.length() > 40)
+            validationErrors.append("Email must be at most 40 characters.\n");
+
+        if (org_position != null && org_position.length() > 20)
+            validationErrors.append("Organization position must be at most 20 characters.\n");
+
+        // Step 2: If org_id is provided, check if it exists
+        if (org_id != -1 && org_position != null) {
+            try {
+                String orgCheckQuery = "SELECT COUNT(*) FROM organization WHERE org_id = ?";
+                PreparedStatement orgCheckStmt = Conn.prepareStatement(orgCheckQuery);
+                orgCheckStmt.setInt(1, org_id);
+                ResultSet rs = orgCheckStmt.executeQuery();
+                if (rs.next() && rs.getInt(1) == 0) {
+                    validationErrors.append("Organization ID " + org_id + " does not exist.\n");
+                }
+            } catch (SQLException e) {
+                return "Student registration failed while checking organization: " + e.getMessage();
+            }
+        }
+
+        // Step 3: If any validation failed, return all messages
+        if (validationErrors.length() > 0) {
+            return "Student registration failed:\n" + validationErrors.toString().trim();
+        }
+
+        // Step 4: Proceed with insertion
+        try {
+            String registerQuery = """
+                INSERT INTO student 
+                    (student_id, first_name, last_name, course, year_level, enrollment_status, email)
+                VALUES (?, ?, ?, ?, ?, ?, ?);
+            """;
+            PreparedStatement registerStmt = Conn.prepareStatement(registerQuery);
+            registerStmt.setInt(1, student_id);
+            registerStmt.setString(2, first_name);
+            registerStmt.setString(3, last_name);
+            registerStmt.setString(4, course);
+            registerStmt.setInt(5, yearLevel);
+            registerStmt.setString(6, enrollment_status);
+            registerStmt.setString(7, email);
+            int affected = registerStmt.executeUpdate();
+
+            if (org_id != -1 && org_position != null) {
+                String orgStudentQuery = """
+                    INSERT INTO org_students (student_id, org_id, position)
+                    VALUES (?, ?, ?);
+                """;
+                PreparedStatement orgStmt = Conn.prepareStatement(orgStudentQuery);
+                orgStmt.setInt(1, student_id);
+                orgStmt.setInt(2, org_id);
+                orgStmt.setString(3, org_position);
+                orgStmt.executeUpdate();
+            }
+
+            return "Student registration completed! (%d rows affected)".formatted(affected);
+        } catch (SQLException e) {
+            return "Student registration failed due to a database error: " + e.getMessage();
+        }
+    }
+
+    /**
+     * Registers a new equipment in the system.
+     * 
+     * @param equipment_code the equipment code
+     * @param equipment_name the equipment name
+     * @param description the equipment description
+     * @return a confirmation message if successful, or an error message if registration fails
+     */
+    public static String registerEquipment(int equipment_code, String equipment_name, String description) {
+        StringBuilder validationErrors = new StringBuilder();
+
+        // Step 1: Validate input lengths
+        if (String.valueOf(equipment_code).length() > 8)
+            validationErrors.append("Equipment code must be at most 8 digits.\n");
+
+        if (equipment_name.length() > 20)
+            validationErrors.append("Equipment name must be at most 20 characters.\n");
+
+        if (description.length() > 100)
+            validationErrors.append("Description must be at most 100 characters.\n");
+
+        // Step 2: If any validation failed, return all messages
+        if (validationErrors.length() > 0) {
+            return "Equipment registration failed:\n" + validationErrors.toString().trim();
+        }
+
+        // Step 3: Proceed with insertion
+        try {
+            String registerQuery = """ 
+                INSERT INTO equipment 
+                    (equipment_code, equipment_name, description, status)
+                VALUES (?, ?, ?, "usable");
+            """;
+
+            PreparedStatement registerStmt = Conn.prepareStatement(registerQuery);
+            registerStmt.setInt(1, equipment_code);
+            registerStmt.setString(2, equipment_name);
+            registerStmt.setString(3, description);
+
+            int affected = registerStmt.executeUpdate();
+            return "Equipment registration completed! (%d rows affected)".formatted(affected);
+
+        } catch (SQLException e) {
+            return "Equipment registration failed due to a database error: " + e.getMessage();
+        }
+    }
+
+    /**
+     * Registers a new laboratory in the system.
+     * 
+     * @param lab_code the laboratory code
+     * @param lab_location the laboratory location
+     * @param description the laboratory description
+     * @param capacity the laboratory capacity
+     * @return a confirmation message if successful, or an error message if registration fails
+     */
+    public static String registerLaboratory(int lab_code, String lab_location, String description, int capacity) {
+        StringBuilder validationErrors = new StringBuilder();
+
+        // Step 1: Validate input lengths and values
+        if (String.valueOf(lab_code).length() > 8)
+            validationErrors.append("Lab code must be at most 8 digits.\n");
+
+        if (lab_location.length() > 20)
+            validationErrors.append("Lab location must be at most 20 characters.\n");
+
+        if (description.length() > 100)
+            validationErrors.append("Description must be at most 100 characters.\n");
+
+        if (capacity > 999)
+            validationErrors.append("Capacity must be at most 3 digits.\n");
+
+        if (capacity <= 0)
+            validationErrors.append("Capacity must be a positive number.\n");
+
+        // Step 2: If any validation failed, return all messages
+        if (validationErrors.length() > 0) {
+            return "Laboratory registration failed:\n" + validationErrors.toString().trim();
+        }
+
+        // Step 3: Proceed with insertion
+        try {
+            String registerQuery = """
+                INSERT INTO laboratory (lab_code, lab_location, description, capacity)
+                VALUES (?, ?, ?, ?);
+            """;
+
+            PreparedStatement registerStmt = Conn.prepareStatement(registerQuery);
+            registerStmt.setInt(1, lab_code);
+            registerStmt.setString(2, lab_location);
+            registerStmt.setString(3, description);
+            registerStmt.setInt(4, capacity);
+
+            int affected = registerStmt.executeUpdate();
+            return "Laboratory registration completed! (%d rows affected)".formatted(affected);
+
+        } catch (SQLException e) {
+            return "Laboratory registration failed due to a database error: " + e.getMessage();
+        }
+    }
+
+    /**
+     * Registers a new organization in the system.
+     * 
+     * @param org_id the organization ID
+     * @param org_name the organization name
+     * @param org_email the organization email
+     * @return a confirmation message if successful, or an error message if registration fails
+     */
+    public static String registerOrganization(int org_id, String org_name, String org_email) {
+        StringBuilder validationErrors = new StringBuilder();
+
+        // Step 1: Validate input lengths
+        if (String.valueOf(org_id).length() > 8)
+            validationErrors.append("Organization ID must be at most 8 digits.\n");
+
+        if (org_name.length() > 20)
+            validationErrors.append("Organization name must be at most 20 characters.\n");
+
+        if (org_email.length() > 40)
+            validationErrors.append("Organization email must be at most 40 characters.\n");
+
+        // Optional: Basic email format check
+        if (!org_email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$"))
+            validationErrors.append("Organization email must be a valid email address.\n");
+
+        // Step 2: If any validation failed, return all messages
+        if (validationErrors.length() > 0) {
+            return "Organization registration failed:\n" + validationErrors.toString().trim();
+        }
+
+        // Step 3: Proceed with insertion
+        try {
+            String registerQuery = """
+                INSERT INTO organization (org_id, org_name, org_email)
+                VALUES (?, ?, ?);
+            """;
+
+            PreparedStatement registerStmt = Conn.prepareStatement(registerQuery);
+            registerStmt.setInt(1, org_id);
+            registerStmt.setString(2, org_name);
+            registerStmt.setString(3, org_email);
+
+            int affected = registerStmt.executeUpdate();
+            return "Organization registration completed! (%d rows affected)".formatted(affected);
+
+        } catch (SQLException e) {
+            return "Organization registration failed due to a database error: " + e.getMessage();
+        }
+    }
 }

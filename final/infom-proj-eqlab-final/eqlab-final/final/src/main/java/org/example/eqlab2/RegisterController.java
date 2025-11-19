@@ -27,20 +27,24 @@ public class RegisterController {
     @FXML private ComboBox<String> studentStatusDropdown;
     @FXML private ComboBox<String> studentOrgDropdown;
     @FXML private TextField studentEmailField;
+    @FXML private TextField studentOrgPosition;
 
     // EQUIPMENT FIELDS
     @FXML private VBox equipmentSection;
+    @FXML private TextField equipIdField;
     @FXML private TextField equipNameField;
     @FXML private TextField equipDescField;
 
     // LAB FIELDS
     @FXML private VBox labSection;
+    @FXML private TextField labIdField;
     @FXML private TextField labLocationField;
     @FXML private TextField labDescField;
     @FXML private TextField labCapacityField;
 
     // ORGANIZATION FIELDS
     @FXML private VBox orgSection;
+    @FXML private TextField orgIdField;
     @FXML private TextField orgNameField;
     @FXML private TextField orgEmailField;
 
@@ -50,7 +54,11 @@ public class RegisterController {
 
         // ---- Fill dropdowns ----
         roleDropdown.getItems().addAll("Student", "Equipment", "Lab", "Organization");
-        studentOrgDropdown.getItems().addAll("Org1", "Org2"); // CHANGE ME
+        
+        String[] orgs = DbConnection.getOrgs();
+        for (String org: orgs) {
+            studentOrgDropdown.getItems().add(org);
+        }
 
         studentStatusDropdown.getItems().addAll("enrolled", "not enrolled");
 
@@ -140,8 +148,26 @@ public class RegisterController {
                     return;
                 }
 
-                showAlert(Alert.AlertType.INFORMATION, "Success",
-                        "string");
+
+                int student_id = Integer.parseInt(studentIdField.getText());
+                String first_name = studentFirstField.getText();
+                String last_name = studentLastField.getText();
+                String course = studentCourseField.getText();
+                int year_level = Integer.parseInt(studentYearField.getText());
+                String enrollment_status = studentStatusDropdown.getValue();
+                String email = studentEmailField.getText();
+                int org_id = studentOrgDropdown.getValue() == null ? -1 : Integer.parseInt(studentOrgDropdown.getValue().substring(1,9));
+                String org_position = studentOrgPosition.getText();
+                 
+                
+
+                String message = DbConnection.registerStudent(student_id, first_name, last_name, course, year_level, enrollment_status, email, org_id, org_position);
+
+
+
+
+                showAlert(Alert.AlertType.INFORMATION, "INFO",
+                        message);
                 return;
 
             // ========================
@@ -156,8 +182,14 @@ public class RegisterController {
                     return;
                 }
 
-                showAlert(Alert.AlertType.INFORMATION, "Success",
-                        "string");
+                    int equipment_code = Integer.parseInt(equipIdField.getText());
+                    String equipment_name = equipNameField.getText();
+                    String description = equipDescField.getText();
+
+                    String msg = DbConnection.registerEquipment(equipment_code, equipment_name, description);
+
+                showAlert(Alert.AlertType.INFORMATION, "INFO",
+                        msg);
                 return;
 
             // ========================
@@ -173,8 +205,15 @@ public class RegisterController {
                     return;
                 }
 
-                showAlert(Alert.AlertType.INFORMATION, "Success",
-                        "string");
+                int lab_code = Integer.parseInt(labIdField.getText());
+                String lab_location = labLocationField.getText();
+                String lab_description = labDescField.getText();
+                int capacity = Integer.parseInt(labCapacityField.getText());
+
+                String msg_lab = DbConnection.registerLaboratory(lab_code, lab_location, lab_description, capacity);
+
+                showAlert(Alert.AlertType.INFORMATION, "INFO",
+                        msg_lab);
                 return;
 
             // ========================
@@ -187,8 +226,15 @@ public class RegisterController {
                     return;
                 }
 
-                showAlert(Alert.AlertType.INFORMATION, "Success",
-                        "string");
+                int org_id2 = Integer.parseInt(orgIdField.getText()); 
+                String org_name = orgNameField.getText();
+                String org_email = orgEmailField.getText();
+
+
+                String msg_org = DbConnection.registerOrganization(org_id2, org_name, org_email) ;
+
+                showAlert(Alert.AlertType.INFORMATION, "INFO",
+                        msg_org);
                 return;
         }
     }
