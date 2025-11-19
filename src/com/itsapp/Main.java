@@ -152,6 +152,58 @@ public class Main {
         );
         System.out.println(duringClassSchedule);
 
+        System.out.println("\n=== TESTING REGISTERING ===");
+
+        // Test 1: Register a student (no org)
+        String studentResult = dbconn.registerStudent(
+            13010001,
+            "Alyssa",
+            "Reyes",
+            "BSCS",
+            "enrolled",
+            "alyssa.reyes@dlsu.edu.ph",
+            -1,
+            null
+        );
+        System.out.println(studentResult);
+
+        // Test 2: Register a student (with org)
+        String studentWithOrg = dbconn.registerStudent(
+            130100021,
+            "Miguel",
+            "Tan",
+            "BSIS",
+            "enrolled",
+            "miguel.tan@dlsu.edu.ph",
+            300200301,
+            "President"
+        );
+        System.out.println(studentWithOrg);
+
+        // Test 3: Register equipment
+        String equipmentResult = dbconn.registerEquipment(
+            50000001,
+            "Oscilloscope",
+            "Used for measuring electronic signals"
+        );
+        System.out.println(equipmentResult);
+
+        // Test 4: Register laboratory
+        String labResult = dbconn.registerLaboratory(
+            40000035,
+            "Goks 305",
+            "Engineering Building, 2nd Floor",
+            30
+        );
+        System.out.println(labResult);
+
+        // Test 5: Register organization
+        String orgResult = dbconn.registerOrganization(
+            30000035,
+            "Photonics Society",
+            "testing.haha@dlsu.edu.ph"
+        );
+        System.out.println(orgResult);
     }
 }
 

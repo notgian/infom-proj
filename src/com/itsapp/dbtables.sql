@@ -386,3 +386,16 @@ INSERT INTO `lab_class_schedule` (laboratory_id, start_time, end_time, day) VALU
 	(40000013, '09:00:00', '12:00:00', 'T'),
 	(40000016, '10:00:00', '13:00:00', 'F'),
 	(40000017, '13:00:00', '15:00:00', 'M');
+    
+-- for testing register methods    
+SELECT * FROM student WHERE student_id = 13010001;
+
+SELECT * FROM student WHERE student_id = 13010002;
+SELECT * FROM org_students WHERE student_id = 13010002;
+
+SELECT * FROM equipment WHERE equipment_code = 50000001;
+
+SELECT * FROM laboratory WHERE lab_code = 40000035;
+
+SELECT * FROM organization WHERE org_id = 30000035;
+
