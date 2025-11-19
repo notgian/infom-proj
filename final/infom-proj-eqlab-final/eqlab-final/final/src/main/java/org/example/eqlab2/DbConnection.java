@@ -132,7 +132,7 @@ class DbConnection {
 
     public static boolean isValidStudent(int id) {
         try {
-            PreparedStatement stmt = Conn.prepareStatement("SELECT * FROM `student` WHERE student_id = " + id);
+            PreparedStatement stmt = Conn.prepareStatement("SELECT * FROM student WHERE student_id = " + id);
             ResultSet res = stmt.executeQuery();
             // returns true if there is a result in the query
             // i.e. there is a student with the id number provided
@@ -147,7 +147,7 @@ class DbConnection {
 
     public static boolean isValidEquipment(int id) {
         try {
-            PreparedStatement stmt = Conn.prepareStatement("SELECT * FROM `equipment` WHERE equipment_code = " + id);
+            PreparedStatement stmt = Conn.prepareStatement("SELECT * FROM equipment WHERE equipment_code = " + id);
             ResultSet res = stmt.executeQuery();
             return res.next();
         }
@@ -159,7 +159,7 @@ class DbConnection {
 
     public static boolean isValidLaboratory(int id) {
         try {
-            PreparedStatement stmt = Conn.prepareStatement("SELECT * FROM `laboratory` WHERE lab_code = " + id);
+            PreparedStatement stmt = Conn.prepareStatement("SELECT * FROM laboratory WHERE lab_code = " + id);
             ResultSet res = stmt.executeQuery();
             return res.next();
         }
@@ -171,7 +171,7 @@ class DbConnection {
 
     public static boolean isValidLabTech(int id) {
         try {
-            PreparedStatement stmt = Conn.prepareStatement("SELECT * FROM `lab_technician` WHERE lab_tech_id = " + id);
+            PreparedStatement stmt = Conn.prepareStatement("SELECT * FROM lab_technician WHERE lab_tech_id = " + id);
             ResultSet res = stmt.executeQuery();
             return res.next();
         }
@@ -183,7 +183,7 @@ class DbConnection {
 
     public static boolean isValidOrg(int id) {
         try {
-            PreparedStatement stmt = Conn.prepareStatement("SELECT * FROM `organization` WHERE org_code = " + id);
+            PreparedStatement stmt = Conn.prepareStatement("SELECT * FROM organization WHERE org_id = " + id);
             ResultSet res = stmt.executeQuery();
             return res.next();
         }

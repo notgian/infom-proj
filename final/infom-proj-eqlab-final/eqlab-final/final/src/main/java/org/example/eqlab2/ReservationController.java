@@ -83,10 +83,14 @@ public class ReservationController {
             int student_id = Integer.parseInt(studentIdField.getText());
 
             LocalDate reservation_date = datePicker.getValue();
-
             DateTimeFormatter datefmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            
-            DbReturn res = DbConnection.reserveLab(student_id, org_id, lab_id, DbConnection.getLabTechID(), reservation_date.format(datefmt), end_time, remarks)
+
+            String startTime = startTimeCombo.getValue();
+            String endTime = endTimeCombo.getValue();
+
+            System.out.println(org_id);
+
+            DbReturn res = DbConnection.reserveLab(student_id, org_id, lab_id, DbConnection.getLabTechID(), reservation_date.format(datefmt), startTime, endTime, "");
             showAlert(Alert.AlertType.INFORMATION, res.getTitle(), res.getMessage());
         clearForm();
         }

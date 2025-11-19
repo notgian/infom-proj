@@ -53,14 +53,16 @@ public class EqlabController {
     //can be deleted later
     @FXML
     public void goDirectDashboard(ActionEvent event) throws IOException {
-        // try { 
-        //     int lab_tech_id = Integer.parseInt(labTechIdField.getText());
-        //     if (DbConnection.isValidLabTech(lab_tech_id))
-        loadScene(event, "dashboard-view.fxml");
-        // } 
-        // catch (NumberFormatException e) {
-        //     e.printStackTrace();
-        // }
+        try { 
+            int lab_tech_id = Integer.parseInt(labTechIdField.getText());
+            if (DbConnection.isValidLabTech(lab_tech_id)) {
+                loadScene(event, "dashboard-view.fxml");
+                DbConnection.setLabTechID(lab_tech_id);
+            }
+        } 
+        catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
 
 
 
