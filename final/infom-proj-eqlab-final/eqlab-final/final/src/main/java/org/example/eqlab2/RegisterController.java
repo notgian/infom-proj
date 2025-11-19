@@ -25,6 +25,7 @@ public class RegisterController {
     @FXML private TextField studentCourseField;
     @FXML private TextField studentYearField;
     @FXML private ComboBox<String> studentStatusDropdown;
+    @FXML private ComboBox<String> studentOrgDropdown;
     @FXML private TextField studentEmailField;
 
     // EQUIPMENT FIELDS
@@ -49,6 +50,7 @@ public class RegisterController {
 
         // ---- Fill dropdowns ----
         roleDropdown.getItems().addAll("Student", "Equipment", "Lab", "Organization");
+        studentOrgDropdown.getItems().addAll("Org1", "Org2"); // CHANGE ME
 
         studentStatusDropdown.getItems().addAll("enrolled", "not enrolled");
 

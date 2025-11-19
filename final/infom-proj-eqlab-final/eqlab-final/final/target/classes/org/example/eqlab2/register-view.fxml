@@ -32,9 +32,10 @@
             <TextField fx:id="studentCourseField" promptText="Course (e.g., BSIT)" prefWidth="300"/>
             <TextField fx:id="studentYearField" promptText="Year Level (1-4)" prefWidth="300"/>
 
-            <ComboBox fx:id="studentStatusDropdown" prefWidth="300" promptText="Enrollment Status"/>
-
             <TextField fx:id="studentEmailField" promptText="Email" prefWidth="300"/>
+            
+            <ComboBox fx:id="studentOrgDropdown" prefWidth="300" promptText="Enrollment Status"/>
+            <ComboBox fx:id="studentStatusDropdown" prefWidth="300" promptText="Enrollment Status"/>
         </VBox>
 
 

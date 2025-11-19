@@ -17,8 +17,6 @@ public class ReturnController {
 
     @FXML
     private TextField studentIdDisplay;
-    @FXML
-    private DatePicker returnDate;
 
     @FXML
     private ComboBox<String> equipmentDropdown;
@@ -32,23 +30,14 @@ public class ReturnController {
     @FXML
     public void initialize() {
 
-        returnDate.setValue(LocalDate.now());   // always today
-        returnDate.setDisable(true);            // user cannot edit
-
         // Equipment list (same as Borrow page)
         equipmentDropdown.getItems().addAll(
-                "Keyboard", "Mouse", "Headset", "USB Cable",
-                "HDMI Cable", "Projector Remote", "Extension Cord",
-                "Ethernet Cable", "Web Camera", "Microphone",
-                "Laptop", "Tablet"
-        );
+
+        ); // CHANGE ME 
 
         // Condition options
         conditionDropdown.getItems().addAll(
-                "Good",
-                "Minor Damage",
-                "Major Damage",
-                "Not Working"
+                "ok", "broken"
         );
     }
 
@@ -65,8 +54,7 @@ public class ReturnController {
             }
 
         // Validation ---------------------------------------------------------
-        if (returnDate.getValue() == null ||
-            equipmentDropdown.getValue() == null ||
+        if (equipmentDropdown.getValue() == null ||
             conditionDropdown.getValue() == null) {
 
             showAlert(Alert.AlertType.ERROR, "Missing Fields",
@@ -82,7 +70,6 @@ public class ReturnController {
     }
 
     private void clearForm() {
-        returnDate.setValue(null);
         equipmentDropdown.setValue(null);
         conditionDropdown.setValue(null);
         notesField.clear();

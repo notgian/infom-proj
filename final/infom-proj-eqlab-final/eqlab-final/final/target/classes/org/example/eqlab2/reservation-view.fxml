@@ -23,6 +23,8 @@
         <Label text="Reserve a laboratory schedule"
                style="-fx-text-fill: #555;" />
 
+        <ComboBox fx:id="studentOrgDropdown" prefWidth="300" promptText="Organization"/>
+
         <VBox spacing="10">
             <Label text="Select Date:"
                    style="-fx-font-size: 14px; -fx-font-font-weight: bold;" />

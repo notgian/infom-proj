@@ -24,49 +24,15 @@ public class BorrowController {
     private TextField studentIdDisplay;
 
     @FXML
-    private DatePicker borrowDate;
-
-    @FXML
     private ComboBox<String> equipmentDropdown;
 
     @FXML
-    private ComboBox<String> startTime;
-
-    @FXML
-    private ComboBox<String> endTime;
-
-
-    @FXML
     public void initialize() {
-
-
-        borrowDate.setValue(LocalDate.now());   // always today
-        borrowDate.setDisable(true);            // user cannot edit
-
         // Equipment list random things
         equipmentDropdown.getItems().addAll(
-                "Keyboard",
-                "Mouse",
-                "Headset",
-                "USB Cable",
-                "HDMI Cable",
-                "Projector Remote",
-                "Extension Cord",
-                "Ethernet Cable",
-                "Web Camera",
-                "Microphone",
-                "Laptop",
-                "Tablet"
-        );
+        ); // CHANGE ME
 
-        // Time options
-        for (int hour = 7; hour <= 20; hour++) {
-            String time = String.format("%02d:00", hour);
-            startTime.getItems().add(time);
-            endTime.getItems().add(time);
-        }
     }
-
 
         @FXML
         public void submitBorrowRequest(ActionEvent event) {
@@ -81,28 +47,10 @@ public class BorrowController {
             }
 
             // Field validation -------------------------------------------------
-            if (equipmentDropdown.getValue() == null ||
-                startTime.getValue() == null ||
-                endTime.getValue() == null) {
+            if (equipmentDropdown.getValue() == null) {
 
                 showAlert(Alert.AlertType.ERROR, "Missing Fields",
                         "Please complete all fields before submitting.");
-                return;
-            }
-
-            // Time validation --------------------------------------------------
-            int start = Integer.parseInt(startTime.getValue().substring(0, 2));
-            int end = Integer.parseInt(endTime.getValue().substring(0, 2));
-
-            if (start == end) {
-                showAlert(Alert.AlertType.ERROR,
-                        "Invalid Time", "Start time and end time cannot be the same.");
-                return;
-            }
-
-            if (end < start) {
-                showAlert(Alert.AlertType.ERROR,
-                        "Invalid Time", "End time must be later than start time.");
                 return;
             }
 
@@ -117,8 +65,6 @@ public class BorrowController {
 
         private void clearForm() {
             equipmentDropdown.setValue(null);
-            startTime.setValue(null);
-            endTime.setValue(null);
             studentIdDisplay.clear();
         }
 

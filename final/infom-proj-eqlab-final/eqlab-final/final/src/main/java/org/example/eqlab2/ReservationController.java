@@ -20,20 +20,20 @@ public class ReservationController {
     @FXML private ComboBox<String> labCombo;
     @FXML private ComboBox<String> startTimeCombo;
     @FXML private ComboBox<String> endTimeCombo;
+    @FXML private ComboBox<String> studentOrgDropdown;
 
-    @FXML
     public void initialize() {
+        studentOrgDropdown.getItems().addAll("Org1", "Org2"); // CHANGE ME
         labCombo.getItems().addAll(
-                "Laboratory 101",
-                "Laboratory 202",
-                "Laboratory 303"
-        );
+        ); // CHANGE ME
 
         // time slots, and it's only until 5 since labs close 5-ish
-        for (int hour = 7; hour <= 17; hour++) {
-            String time = String.format("%02d:00", hour);
-            startTimeCombo.getItems().add(time);
-            endTimeCombo.getItems().add(time);
+        for (int hour = 7; hour <= 16; hour++) {
+            String timeStart = String.format("%02d:00", hour);
+            startTimeCombo.getItems().add(timeStart);
+
+            String timeEnd = String.format("%02d:00", hour+1);
+            endTimeCombo.getItems().add(timeEnd);
         }
     }
 
